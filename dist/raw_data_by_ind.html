@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Raw data by individual | Pit Antenna Data Explorer</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight,alt,wide.css">
+<link rel="preload" as="style" href="./_observablehq/stdlib/inputs.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight,alt,wide.css">
+<link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.css">
+<link rel="modulepreload" href="./_observablehq/client.js">
+<link rel="modulepreload" href="./_observablehq/runtime.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.js">
+<link rel="modulepreload" href="./_import/components/raw_data_by_ind.5895f9b6.js">
+<link rel="modulepreload" href="./_node/@tidyjs/tidy@2.5.2/index.js">
+<link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.14/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_observablehq/stdlib/inputs.js">
+<link rel="modulepreload" href="./_npm/htl@0.3.1/_esm.js">
+<link rel="modulepreload" href="./_npm/isoformat@0.2.1/_esm.js">
+<link rel="modulepreload" href="./_node/d3-array@2.12.1/index.js">
+<link rel="modulepreload" href="./_npm/d3@7.9.0/_esm.js">
+<link rel="modulepreload" href="./_npm/interval-tree-1d@1.0.4/_esm.js">
+<link rel="modulepreload" href="./_node/internmap@1.0.1/index.js">
+<link rel="modulepreload" href="./_npm/d3-array@3.2.4/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-axis@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-brush@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-chord@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-color@3.1.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-contour@4.0.2/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-delaunay@6.0.4/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-dispatch@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-drag@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-ease@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-fetch@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-force@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-format@3.1.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-geo@3.1.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-hierarchy@3.1.2/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-interpolate@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-path@3.1.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-polygon@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-quadtree@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-random@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-scale@4.0.2/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-scale-chromatic@3.1.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-selection@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-shape@3.2.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-time@3.1.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-time-format@4.1.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-timer@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-transition@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-zoom@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/binary-search-bounds@2.0.5/_esm.js">
+<link rel="modulepreload" href="./_npm/internmap@2.0.3/_esm.js">
+<link rel="modulepreload" href="./_npm/delaunator@5.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/robust-predicates@3.0.2/_esm.js">
+<script type="module">
+
+import {define} from "./_observablehq/client.js";
+import {registerFile} from "./_observablehq/stdlib.js";
+
+registerFile("./data/all_for_obs.csv", {"name":"./data/all_for_obs.csv","mimeType":"text/csv","path":"./_file/data/all_for_obs.fe32f775.csv","lastModified":1714768066461});
+
+define({id: "accc9e48", inputs: ["FileAttachment"], outputs: ["cdwb"], body: (FileAttachment) => {
+const cdwb = FileAttachment("./data/all_for_obs.csv").csv({typed: true});
+//const cdwb = FileAttachment("data/all_for_obs.json").json();
+return {cdwb};
+}});
+
+define({id: "87a74a65", outputs: ["tagsOverTime","tagsOverTimeRiver"], body: async () => {
+const [{tagsOverTime}, {tagsOverTimeRiver}] = await Promise.all([import("./_import/components/raw_data_by_ind.5895f9b6.js"), import("./_import/components/raw_data_by_ind.5895f9b6.js")]);
+//import * as TMP from "./components/raw_data_by_ind.js";
+return {tagsOverTime,tagsOverTimeRiver};
+}});
+
+define({id: "d1d0da91", inputs: ["cdwb"], outputs: ["cohorts"], body: (cdwb) => {
+const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort();
+return {cohorts};
+}});
+
+define({id: "148fe5ac", inputs: ["view","Inputs","cohorts"], outputs: ["selectCohort"], body: (view,Inputs,cohorts) => {
+const selectCohort = view(Inputs.select(cohorts, {value: cohorts, multiple: true, label: "Select cohorts"}));
+return {selectCohort};
+}});
+
+define({id: "075a31f6", inputs: ["cdwb"], outputs: ["species"], body: (cdwb) => {
+const species = [...new Set(cdwb.map(d => d.species))].sort();
+return {species};
+}});
+
+define({id: "d62741dd", inputs: ["view","Inputs","species"], outputs: ["selectSpecies"], body: (view,Inputs,species) => {
+const selectSpecies = view(Inputs.select(species, {value: species, multiple: true, label: "Select species"}));
+return {selectSpecies};
+}});
+
+define({id: "225c6227", inputs: ["tidy","cdwb","filter","selectSpecies","selectCohort","groupBy","summarize","n","arrange","desc"], outputs: ["tags"], body: (tidy,cdwb,filter,selectSpecies,selectCohort,groupBy,summarize,n,arrange,desc) => {
+const tags = tidy(
+  cdwb,
+  filter((d) => selectSpecies.includes(d.species)),
+  filter((d) => selectCohort.includes(d.cohort)),
+  groupBy("tag", [summarize({ n: n() })]),
+  arrange([desc("n")]),
+  filter((d) => d.tag != "NA"),
+  filter((d) => d.n > 2)
+);
+return {tags};
+}});
+
+define({id: "89e5509a", inputs: ["view","Inputs","tags"], outputs: ["selectTag"], body: (view,Inputs,tags) => {
+const selectTag = view(
+  Inputs.select(
+    tags.map((d) => d.tag), 
+      {
+        multiple: true, 
+        label: "Select tags"
+        //format: (d => `${d[,0]} n=${d[,1]}`)
+      }
+    )
+  );
+return {selectTag};
+}});
+
+define({id: "51cfafe4", inputs: ["display","selectTag"], body: (display,selectTag) => {
+display(selectTag)
+}});
+
+define({id: "8d9a9fde", inputs: ["tidy","cdwb","mutate"], outputs: ["tagsToPlot"], body: (tidy,cdwb,mutate) => {
+const tagsToPlot = tidy(
+  cdwb,
+  mutate({
+    newDate: (d) => new Date(d.detectionDate)
+  })
+);
+return {tagsToPlot};
+}});
+
+define({id: "97ef877b", inline: true, inputs: ["tagsToPlot","selectTag","display"], body: async (tagsToPlot,selectTag,display) => {
+display(await(
+tagsToPlot.filter((d) => selectTag.includes(d.tag)).length
+))
+}});
+
+define({id: "5a67717d", inline: true, inputs: ["resize","tagsOverTime","tagsToPlot","selectTag","display"], body: async (resize,tagsOverTime,tagsToPlot,selectTag,display) => {
+display(await(
+resize((width) => tagsOverTime(
+      tagsToPlot.filter((d) => selectTag.includes(d.tag)), 
+      {width})
+      )
+))
+}});
+
+define({id: "f4f168ae", inline: true, inputs: ["resize","tagsOverTimeRiver","tagsToPlot","selectTag","display"], body: async (resize,tagsOverTimeRiver,tagsToPlot,selectTag,display) => {
+display(await(
+resize((width) => tagsOverTimeRiver(
+      tagsToPlot.filter((d) => selectTag.includes(d.tag)), 
+      {width})
+    )
+))
+}});
+
+define({id: "42107319", outputs: ["tidy","addItems","addRows","arrange","asc","complete","contains","count","cumsum","debug","desc","deviation","distinct","endsWith","everything","expand","fill","filter","first","fullJoin","fullSeq","fullSeqDate","fullSeqDateISOString","groupBy","innerJoin","lag","last","lead","leftJoin","map","matches","max","mean","meanRate","median","min","mutate","mutateWithSummary","n","nDistinct","negate","numRange","pick","pivotLonger","pivotWider","rate","rename","replaceNully","roll","select","slice","sliceHead","sliceMax","sliceMin","sliceSample","sliceTail","sort","startsWith","sum","summarize","summarizeAll","summarizeAt","tally","TMath","total","totalAll","totalAt","totalIf","transmute","variance","vectorSeq","vectorSeqDate","when"], body: async () => {
+const {tidy, addItems, addRows, arrange, asc, complete, contains, count, cumsum, debug, desc, deviation, distinct, endsWith, everything, expand, fill, filter, first, fullJoin, fullSeq, fullSeqDate, fullSeqDateISOString, groupBy, innerJoin, lag, last, lead, leftJoin, map, matches, max, mean, meanRate, median, min, mutate, mutateWithSummary, n, nDistinct, negate, numRange, pick, pivotLonger, pivotWider, rate, rename, replaceNully, roll, select, slice, sliceHead, sliceMax, sliceMin, sliceSample, sliceTail, sort, startsWith, sum, summarize, summarizeAll, summarizeAt, tally, TMath, total, totalAll, totalAt, totalIf, transmute, variance, vectorSeq, vectorSeqDate, when} = await import("./_node/@tidyjs/tidy@2.5.2/index.js");
+/* did this to get tidyjs to load
+
+//Turns off ssl
+npm set strict-ssl false
+//Installs node packages
+npm ci
+//Turns ssl back on for future protection
+npm set strict-ssl true
+*/
+
+
+return {tidy,addItems,addRows,arrange,asc,complete,contains,count,cumsum,debug,desc,deviation,distinct,endsWith,everything,expand,fill,filter,first,fullJoin,fullSeq,fullSeqDate,fullSeqDateISOString,groupBy,innerJoin,lag,last,lead,leftJoin,map,matches,max,mean,meanRate,median,min,mutate,mutateWithSummary,n,nDistinct,negate,numRange,pick,pivotLonger,pivotWider,rate,rename,replaceNully,roll,select,slice,sliceHead,sliceMax,sliceMin,sliceSample,sliceTail,sort,startsWith,sum,summarize,summarizeAll,summarizeAt,tally,TMath,total,totalAll,totalAt,totalIf,transmute,variance,vectorSeq,vectorSeqDate,when};
+}});
+
+</script>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Pit Antenna Data Explorer</a></li>
+  </ol>
+  <ol>
+    <li class="observablehq-link"><a href="./overview">Filter data</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./raw_data_by_ind">Raw data by individual</a></li>
+  </ol>
+</nav>
+<script>{Object.assign(document.createElement("a"),{href:""}).password&&location.replace(location.href);const e=document.querySelector("#observablehq-sidebar"),t=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?t.checked=r==="true":t.indeterminate=!0;for(const o of document.querySelectorAll("#observablehq-sidebar summary")){const s=o.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${o.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type), h2:first-child, :not(h1) + h2">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#subset-the-dataset">Subset the dataset</a></li>
+<li class="observablehq-secondary-link"><a href="#select-tags-from-subset">Select tags from subset</a></li>
+</ol>
+</nav>
+</aside>
+<div id="observablehq-center">
+<main id="observablehq-main" class="observablehq">
+<h1 id="raw-data-exploration-by-individual-fish" tabindex="-1"><a class="observablehq-header-anchor" href="#raw-data-exploration-by-individual-fish">Raw data exploration by individual fish</a></h1>
+<div id="cell-accc9e48" class="observablehq observablehq--block"></div>
+<div id="cell-87a74a65" class="observablehq observablehq--block"></div>
+<h2 id="subset-the-dataset" tabindex="-1"><a class="observablehq-header-anchor" href="#subset-the-dataset">Subset the dataset</a></h2>
+<div id="cell-d1d0da91" class="observablehq observablehq--block"></div>
+<div id="cell-148fe5ac" class="observablehq observablehq--block"></div>
+<div id="cell-075a31f6" class="observablehq observablehq--block"></div>
+<div id="cell-d62741dd" class="observablehq observablehq--block"></div>
+<h2 id="select-tags-from-subset" tabindex="-1"><a class="observablehq-header-anchor" href="#select-tags-from-subset">Select tags from subset</a></h2>
+<div id="cell-225c6227" class="observablehq observablehq--block"></div>
+<div id="cell-89e5509a" class="observablehq observablehq--block"></div>
+<div id="cell-51cfafe4" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-8d9a9fde" class="observablehq observablehq--block"></div>
+<p>selectTag length: <span id="cell-97ef877b" class="observablehq--loading"></span></p>
+<div class="grid grid-cols-2">
+  <div class="card">
+    <span id="cell-5a67717d" class="observablehq--loading"></span>
+  </div>
+    <div class="card">
+    <span id="cell-f4f168ae" class="observablehq--loading"></span>
+  </div>
+</div>
+<div id="cell-42107319" class="observablehq observablehq--block"></div>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./overview"><span>Filter data</span></a></nav>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-05-06T13:43:12">May 6, 2024</a>.</div>
+</footer>
+</div>

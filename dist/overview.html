@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Filter data | Pit Antenna Data Explorer</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight,alt,wide.css">
+<link rel="preload" as="style" href="./_observablehq/stdlib/inputs.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight,alt,wide.css">
+<link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.css">
+<link rel="modulepreload" href="./_observablehq/client.js">
+<link rel="modulepreload" href="./_observablehq/runtime.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.js">
+<link rel="modulepreload" href="./_import/components/overview.bbf384ba.js">
+<link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.14/_esm.js">
+<link rel="modulepreload" href="./_npm/d3@7.9.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_observablehq/stdlib/inputs.js">
+<link rel="modulepreload" href="./_npm/htl@0.3.1/_esm.js">
+<link rel="modulepreload" href="./_npm/isoformat@0.2.1/_esm.js">
+<link rel="modulepreload" href="./_npm/interval-tree-1d@1.0.4/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-array@3.2.4/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-axis@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-brush@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-chord@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-color@3.1.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-contour@4.0.2/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-delaunay@6.0.4/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-dispatch@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-drag@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-ease@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-fetch@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-force@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-format@3.1.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-geo@3.1.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-hierarchy@3.1.2/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-interpolate@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-path@3.1.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-polygon@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-quadtree@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-random@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-scale@4.0.2/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-scale-chromatic@3.1.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-selection@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-shape@3.2.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-time@3.1.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-time-format@4.1.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-timer@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-transition@3.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-zoom@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/binary-search-bounds@2.0.5/_esm.js">
+<link rel="modulepreload" href="./_npm/internmap@2.0.3/_esm.js">
+<link rel="modulepreload" href="./_npm/delaunator@5.0.1/_esm.js">
+<link rel="modulepreload" href="./_npm/robust-predicates@3.0.2/_esm.js">
+<script type="module">
+
+import {define} from "./_observablehq/client.js";
+import {registerFile} from "./_observablehq/stdlib.js";
+
+registerFile("./data/all_for_obs.csv", {"name":"./data/all_for_obs.csv","mimeType":"text/csv","path":"./_file/data/all_for_obs.fe32f775.csv","lastModified":1714768066461});
+
+define({id: "accc9e48", inputs: ["FileAttachment"], outputs: ["cdwb"], body: (FileAttachment) => {
+const cdwb = FileAttachment("./data/all_for_obs.csv").csv({typed: true});
+//const cdwb = FileAttachment("data/all_for_obs.json").json();
+return {cdwb};
+}});
+
+define({id: "f5df0968", outputs: ["barChartOverview","plotSelectedByInd"], body: async () => {
+const {barChartOverview, plotSelectedByInd} = await import("./_import/components/overview.bbf384ba.js");
+//import {interval} from 'https://observablehq.com/@mootari/range-slider';
+return {barChartOverview,plotSelectedByInd};
+}});
+
+define({id: "3aa31753", inputs: ["cdwb"], body: (cdwb) => {
+cdwb.map(d => d.newDate = new Date(d.detectionDate));
+}});
+
+define({id: "7ea546c8", inline: true, inputs: ["cdwb","display"], body: async (cdwb,display) => {
+display(await(
+cdwb.filter((d) => d.species === "bkt").length.toLocaleString("en-US")
+))
+}});
+
+define({id: "8c27bc7d", inline: true, inputs: ["cdwb","display"], body: async (cdwb,display) => {
+display(await(
+cdwb.filter((d) => d.species === "bnt").length.toLocaleString("en-US")
+))
+}});
+
+define({id: "ddfc44b6", inline: true, inputs: ["cdwb","display"], body: async (cdwb,display) => {
+display(await(
+cdwb.filter((d) => d.species === "ats").length.toLocaleString("en-US")
+))
+}});
+
+define({id: "e6b6ef62", inline: true, inputs: ["cdwb","display"], body: async (cdwb,display) => {
+display(await(
+cdwb.filter((d) => d.survey === "shock").length.toLocaleString("en-US")
+))
+}});
+
+define({id: "f1742969", inline: true, inputs: ["cdwb","display"], body: async (cdwb,display) => {
+display(await(
+cdwb.filter((d) => d.survey === "stationaryAntenna").length.toLocaleString("en-US")
+))
+}});
+
+define({id: "97b829e0", inline: true, inputs: ["cdwb","display"], body: async (cdwb,display) => {
+display(await(
+cdwb.filter((d) => d.survey === "portableAntenna").length.toLocaleString("en-US")
+))
+}});
+
+define({id: "f4fe9542", body: () => {
+// Table of whole dataset.
+//const tableCDWB = view(Inputs.table(cdwb, {required: false}));
+}});
+
+define({id: "b18bf5a1", inline: true, inputs: ["resize","barChartOverview","cdwb","display"], body: async (resize,barChartOverview,cdwb,display) => {
+display(await(
+resize((width) => barChartOverview(cdwb, {width}))
+))
+}});
+
+define({id: "f4b3f7e4", inputs: ["view","Inputs"], outputs: ["radioIncludeUntagged"], body: (view,Inputs) => {
+const radioIncludeUntagged = view(Inputs.radio([true, false], {value: true, label: "Include untagged fish?"}));
+return {radioIncludeUntagged};
+}});
+
+define({id: "6125f5bd", inputs: ["cdwb","Inputs","Generators"], outputs: ["cohorts","selectCohortsOV","selectedCohorts","species","selectSpeciesOV","selectedSpecies","rivers","selectRiversOV","selectedRivers","surveys","selectSurveysOV","selectedSurveys"], body: (cdwb,Inputs,Generators) => {
+const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort().filter(d => isFinite(d));
+const selectCohortsOV = (Inputs.select(cohorts, {value: 2005, multiple: 8, width: 90, label: "Select cohorts"}));
+const selectedCohorts = Generators.input(selectCohortsOV);
+
+const species = [...new Set(cdwb.map(d => d.species))].sort();
+const selectSpeciesOV = (Inputs.select(species, {value: species, multiple: true, width: 80, label: "Select species"}));
+const selectedSpecies = Generators.input(selectSpeciesOV);
+
+const rivers = [...new Set(cdwb.map(d => d.riverOrdered))].sort();
+const selectRiversOV = (Inputs.select(rivers, {value: rivers, multiple: true, width: 120, label: "Select rivers"}));
+const selectedRivers = Generators.input(selectRiversOV);
+
+const surveys = [...new Set(cdwb.map(d => d.survey))];
+const selectSurveysOV = (Inputs.select(surveys, {value: surveys, multiple: true, width: 160, label: "Select surveys"}));
+const selectedSurveys = Generators.input(selectSurveysOV);
+return {cohorts,selectCohortsOV,selectedCohorts,species,selectSpeciesOV,selectedSpecies,rivers,selectRiversOV,selectedRivers,surveys,selectSurveysOV,selectedSurveys};
+}});
+
+define({id: "eaa13441", inline: true, inputs: ["view","selectCohortsOV"], body: (view,selectCohortsOV) => {
+view(selectCohortsOV)
+}});
+
+define({id: "0ae89b96", inline: true, inputs: ["selectSpeciesOV","display"], body: async (selectSpeciesOV,display) => {
+display(await(
+selectSpeciesOV
+))
+}});
+
+define({id: "6af07bbb", inline: true, inputs: ["selectRiversOV","display"], body: async (selectRiversOV,display) => {
+display(await(
+selectRiversOV
+))
+}});
+
+define({id: "58af2a53", inline: true, inputs: ["selectSurveysOV","display"], body: async (selectSurveysOV,display) => {
+display(await(
+selectSurveysOV
+))
+}});
+
+define({id: "ccf0aaae", inputs: ["cdwb","radioIncludeUntagged"], outputs: ["cdwbFiltered0"], body: (cdwb,radioIncludeUntagged) => {
+const cdwbFiltered0 = cdwb.filter(
+  d => {
+    if(radioIncludeUntagged) {
+      return true;
+    } else {
+      return d.tag !== "untagged"
+    } 
+})
+return {cdwbFiltered0};
+}});
+
+define({id: "dc996a2a", inputs: ["cdwbFiltered0","selectedSpecies","selectedCohorts","selectedRivers","selectedSurveys","selectedRangeMinLength","selectedRangeMaxLength","selectedRangeMinN","selectedRangeMaxN"], outputs: ["cdwbFiltered"], body: (cdwbFiltered0,selectedSpecies,selectedCohorts,selectedRivers,selectedSurveys,selectedRangeMinLength,selectedRangeMaxLength,selectedRangeMinN,selectedRangeMaxN) => {
+const cdwbFiltered = cdwbFiltered0.filter(
+  d => {
+    if(d.survey === "shock") {
+      return d.riverMeter > 4000 && 
+        selectedSpecies.includes(d.species) &&
+        selectedCohorts.includes(d.cohort) &&
+        selectedRivers.includes(d.riverOrdered) &&
+        selectedSurveys.includes(d.survey) &&
+        d.observedLength >= selectedRangeMinLength &&
+        d.observedLength <= selectedRangeMaxLength &&
+        d.nPerInd >= selectedRangeMinN &&
+        d.nPerInd <= selectedRangeMaxN;
+    } else if(d.survey === "stationaryAntenna") {
+      return d.riverMeter > 0 && 
+        selectedSpecies.includes(d.species) &&
+        selectedCohorts.includes(d.cohort) &&
+        selectedRivers.includes(d.riverOrdered) &&
+        selectedSurveys.includes(d.survey);
+    } else if(d.survey === "portableAntenna") {
+       return selectedSpecies.includes(d.species) && // need to add riverMeter to survey==portableAntenna
+        selectedCohorts.includes(d.cohort) &&
+        selectedRivers.includes(d.riverOrdered) &&
+        selectedSurveys.includes(d.survey);
+    }
+  }
+)
+return {cdwbFiltered};
+}});
+
+define({id: "ceb0ed69", inputs: ["d3","cdwbFiltered0","Inputs","Generators"], outputs: ["extentLength","rangeMinLength","selectedRangeMinLength","rangeMaxLength","selectedRangeMaxLength","rangeMinN","selectedRangeMinN","rangeMaxN","selectedRangeMaxN"], body: (d3,cdwbFiltered0,Inputs,Generators) => {
+const extentLength = (d3.extent(cdwbFiltered0.map(d => d.observedLength)))
+const rangeMinLength = (Inputs.range([extentLength[0], extentLength[1]], {step: 10, value: extentLength[0], label: 'Minimum fish length'}));
+const selectedRangeMinLength = Generators.input(rangeMinLength);
+const rangeMaxLength = (Inputs.range([rangeMinLength, extentLength[1]], {step: 10, value: extentLength[1], label: 'Maximum fish length'}));
+const selectedRangeMaxLength = Generators.input(rangeMaxLength);
+
+const rangeMinN = (Inputs.range([1, d3.max(cdwbFiltered0, d => d.nPerInd)], {step: 1, value: 1, label: 'Maximum num obs/fish'}));
+const selectedRangeMinN = Generators.input(rangeMinN);
+const rangeMaxN = (Inputs.range([rangeMinN, d3.max(cdwbFiltered0, d => d.nPerInd)], {step: 1, value: d3.max(cdwbFiltered0, d => d.nPerInd), label: 'Maximum num obs/fish'}));
+const selectedRangeMaxN = Generators.input(rangeMaxN);
+return {extentLength,rangeMinLength,selectedRangeMinLength,rangeMaxLength,selectedRangeMaxLength,rangeMinN,selectedRangeMinN,rangeMaxN,selectedRangeMaxN};
+}});
+
+define({id: "58b998ff", inline: true, inputs: ["rangeMinLength","display"], body: async (rangeMinLength,display) => {
+display(await(
+rangeMinLength
+))
+}});
+
+define({id: "f8485b9b", inline: true, inputs: ["rangeMaxLength","display"], body: async (rangeMaxLength,display) => {
+display(await(
+rangeMaxLength
+))
+}});
+
+define({id: "3878e53a", inline: true, inputs: ["rangeMinN","display"], body: async (rangeMinN,display) => {
+display(await(
+rangeMinN
+))
+}});
+
+define({id: "813a093a", inline: true, inputs: ["rangeMaxN","display"], body: async (rangeMaxN,display) => {
+display(await(
+rangeMaxN
+))
+}});
+
+define({id: "61648a6d", inline: true, inputs: ["cdwbFiltered","display"], body: async (cdwbFiltered,display) => {
+display(await(
+cdwbFiltered.length
+))
+}});
+
+define({id: "39b09ccd", inputs: ["display","cdwbFiltered"], body: (display,cdwbFiltered) => {
+display(cdwbFiltered)
+}});
+
+define({id: "45b4e53d", inputs: ["Inputs","Generators"], outputs: ["rangeHeight","selectedRangeHeight"], body: (Inputs,Generators) => {
+const rangeHeight = (Inputs.range([200, 2000], {step: 10, value: 600, label: 'Chart height'}));
+const selectedRangeHeight = Generators.input(rangeHeight);
+return {rangeHeight,selectedRangeHeight};
+}});
+
+define({id: "83128f99", inline: true, inputs: ["rangeHeight","display"], body: async (rangeHeight,display) => {
+display(await(
+rangeHeight
+))
+}});
+
+define({id: "c8c06364", inline: true, inputs: ["resize","plotSelectedByInd","cdwbFiltered","surveys","selectedRangeHeight","display"], body: async (resize,plotSelectedByInd,cdwbFiltered,surveys,selectedRangeHeight,display) => {
+display(await(
+resize((width) => plotSelectedByInd(
+      cdwbFiltered,
+      surveys,
+      selectedRangeHeight,
+      {width}
+    )
+    )
+  
+))
+}});
+
+</script>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Pit Antenna Data Explorer</a></li>
+  </ol>
+  <ol>
+    <li class="observablehq-link observablehq-link-active"><a href="./overview">Filter data</a></li>
+    <li class="observablehq-link"><a href="./raw_data_by_ind">Raw data by individual</a></li>
+  </ol>
+</nav>
+<script>{Object.assign(document.createElement("a"),{href:""}).password&&location.replace(location.href);const e=document.querySelector("#observablehq-sidebar"),t=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?t.checked=r==="true":t.indeterminate=!0;for(const o of document.querySelectorAll("#observablehq-sidebar summary")){const s=o.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${o.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<main id="observablehq-main" class="observablehq">
+<h1 id="trout-and-salmon-number-of-observations" tabindex="-1"><a class="observablehq-header-anchor" href="#trout-and-salmon-number-of-observations">Trout and salmon number of observations</a></h1>
+<div id="cell-accc9e48" class="observablehq observablehq--block"></div>
+<div id="cell-f5df0968" class="observablehq observablehq--block"></div>
+<div id="cell-3aa31753" class="observablehq observablehq--block"></div>
+<!-- Cards with big numbers -->
+<div class="grid grid-cols-3">
+  <div class="card">
+    <h2>Brook trout</h2>
+    <span class="big"><span id="cell-7ea546c8" class="observablehq--loading"></span></span>
+  </div>
+    <div class="card">
+    <h2>Brown trout</h2>
+    <span class="big"><span id="cell-8c27bc7d" class="observablehq--loading"></span></span>
+  </div>
+    <div class="card">
+    <h2>Atlantic salmon</h2>
+    <span class="big"><span id="cell-ddfc44b6" class="observablehq--loading"></span></span>
+  </div>
+</div>
+<hr>
+<div class="grid grid-cols-3">
+  <div class="card">
+    <h2>Shocking</h2>
+    <span class="big"><span id="cell-e6b6ef62" class="observablehq--loading"></span></span>
+  </div>
+    <div class="card">
+    <h2>Stationary antenna</h2>
+    <span class="big"><span id="cell-f1742969" class="observablehq--loading"></span></span>
+  </div>
+    <div class="card">
+    <h2>Portable antenna</h2>
+    <span class="big"><span id="cell-97b829e0" class="observablehq--loading"></span></span>
+  </div>
+</div>
+<hr>
+<div id="cell-f4fe9542" class="observablehq observablehq--block"></div>
+<div class="card">
+  <span id="cell-b18bf5a1" class="observablehq--loading"></span>
+</div>
+<hr>
+<div class="small note">
+  Survey type "portableAntenna" is missing `riverMeter`, so those data don't get y-axis value on the plot currently. Need to add `rvierMeter` at the WBBook stage.
+</div>
+<div id="cell-f4b3f7e4" class="observablehq observablehq--block"></div>
+<hr>
+<div id="cell-6125f5bd" class="observablehq observablehq--block"></div>
+<h2 id="filter-the-dataset" tabindex="-1"><a class="observablehq-header-anchor" href="#filter-the-dataset">Filter the dataset</a></h2>
+<p>Select a cohort. Other variables are all selected by default.</p>
+<div class="grid grid-cols-4"> 
+  <div style="display: flex; flex-direction: column; align-items: flex-start;">
+    <span id="cell-eaa13441" class="observablehq--loading"></span>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: flex-start;">
+    <span id="cell-0ae89b96" class="observablehq--loading"></span>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: flex-start;">
+    <span id="cell-6af07bbb" class="observablehq--loading"></span>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: flex-start;">
+    <span id="cell-58af2a53" class="observablehq--loading"></span>
+  </div>
+</div>
+<div id="cell-ccf0aaae" class="observablehq observablehq--block"></div>
+<div id="cell-dc996a2a" class="observablehq observablehq--block"></div>
+<hr>
+<div id="cell-ceb0ed69" class="observablehq observablehq--block"></div>
+<div class="grid grid-cols-3">
+  <div style="display: flex; flex-direction: column; align-items: flex-start;">
+    <span id="cell-58b998ff" class="observablehq--loading"></span>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: flex-start;">
+    <span id="cell-f8485b9b" class="observablehq--loading"></span>
+  </div>
+</div>
+<div class="grid grid-cols-3">
+  <div style="display: flex; flex-direction: column; align-items: flex-start;">
+    <span id="cell-3878e53a" class="observablehq--loading"></span>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: flex-start;">
+    <span id="cell-813a093a" class="observablehq--loading"></span>
+  </div>
+</div>
+<p>Number of rows in filtered dataset: <span id="cell-61648a6d" class="observablehq--loading"></span></p>
+<div id="cell-39b09ccd" class="observablehq observablehq--block observablehq--loading"></div>
+<hr>
+<div id="cell-45b4e53d" class="observablehq observablehq--block"></div>
+<p>In the chart below, sybmol colors are individuals (blue is untagged), size of the symbol is proportional to fish length and the symbol represents survey type. The chart is facetted by river and cohort.</p>
+<div class="card">
+  <div style="display: flex; flex-direction: column; align-items: flex-end;"><span id="cell-83128f99" class="observablehq--loading"></span></div>
+  <div> </div>
+  <span id="cell-c8c06364" class="observablehq--loading"></span>
+</div>
+<div class="small note">
+  small note
+</div>
+<p>ToDo: fix the scale for r, so r doesn't change as observedLength is filtered</p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./"><span>Pit Antenna Data Explorer</span></a><a rel="next" href="./raw_data_by_ind"><span>Raw data by individual</span></a></nav>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-05-06T13:43:12">May 6, 2024</a>.</div>
+</footer>
+</div>
