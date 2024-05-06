@@ -15,8 +15,10 @@ Setup steps:
 5) In github on the settings/actions page, make sure `Github Actions` is selected in the source dropdopwn.  
 6) Delete `./dist` from .gitignore.   
 7) In the terminal, run `npm run build` to build the site in /dist
-8) Do normal commit/push cycle
+8) Do normal commit/push cycle.
+
 <hr>  
+
 This is an [Observable Framework](https://observablehq.com/framework) project. To start the local preview server, run:
 
 ```
