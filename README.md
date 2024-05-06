@@ -13,8 +13,9 @@ Setup steps:
     `
     to make the  /dist the source for the github.io page. Commit this change in github.
 5) In github on the settings/actions page, make sure `Github Actions` is selected in the source dropdopwn.  
-6) Delete `./dist` from .gitignore.   
-7) In the terminal, run `npm run build` to build the site in /dist
+6) Delete `./dist` from .gitignore.  
+7) In the terminal, run `npm run build` to build the site in /dist.  
+8) Run this in the terminal: `git lfs track "*.csv"` to track large data files.  
 8) Do normal commit/push cycle.
 
 <hr>  
