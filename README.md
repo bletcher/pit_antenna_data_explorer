@@ -15,8 +15,9 @@ Setup steps:
 6) Delete `./dist` from .gitignore.   
 7) In the terminal, run `npm run build` to build the site in /dist
 8) Do normal commit/push cycle
+<hr>  
 This is an [Observable Framework](https://observablehq.com/framework) project. To start the local preview server, run:
-<hr>
+
 ```
 npm run dev
 ```
