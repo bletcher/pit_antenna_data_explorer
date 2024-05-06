@@ -1,7 +1,22 @@
 # Pit Antenna Data Explorer
-
+Setup steps:
+1) In the terminal, go to root directory (one below the subdirectory you will create in the next step)
+2) Run `npm init "@observablehq"` and don't initialize git
+3) In vsCode, open the folder for the project and then publish to a new repo (from the `source control` badge)
+4) Go to Actions and hit `GitHub Pages Jekyll` to set up `jekyll-gh-pages.yml`
+   [or, in settings, in Build and deployment, set source as github actions and configure GitHub Pages Jekyll]
+5) In `jekyll-gh-pages.yml` add the bottom two lines as follows: 
+   `  - name: Upload artifact  
+        uses: actions/upload-pages-artifact@v3  
+        with:  
+          path: './dist'  
+    `
+    to make the  /dist the source for the github.io page. Commit this change in github.
+6) Delete `./dist` from .gitignore.   
+7) In the terminal, run `npm run build` to build the site in /dist
+8) Do normal commit/push cycle
 This is an [Observable Framework](https://observablehq.com/framework) project. To start the local preview server, run:
-
+<hr>
 ```
 npm run dev
 ```
