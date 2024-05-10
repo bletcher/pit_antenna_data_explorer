@@ -7,8 +7,8 @@ toc: true
 # Raw data exploration by individual fish  
 
 ```js
-const cdwb = FileAttachment("data/all_for_obs.csv").csv({typed: true});
-//const cdwb = FileAttachment("data/all_for_obs.json").json();
+//const cdwb = FileAttachment("data/all_for_obs.csv").csv({typed: true});
+const cdwb = FileAttachment("data/cdwb.json").json();
 ```
 
 ```js
@@ -16,11 +16,13 @@ import {tagsOverTime} from "./components/raw_data_by_ind.js";
 import {tagsOverTimeRiver} from "./components/raw_data_by_ind.js";
 //import * as TMP from "./components/raw_data_by_ind.js";
 ```
+
 ## Subset the dataset
 
 ```js
 const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort();
 ```
+
 ```js
 const selectCohort = view(Inputs.select(cohorts, {value: cohorts, multiple: true, label: "Select cohorts"}));
 ```
@@ -28,6 +30,7 @@ const selectCohort = view(Inputs.select(cohorts, {value: cohorts, multiple: true
 ```js
 const species = [...new Set(cdwb.map(d => d.species))].sort();
 ```
+
 ```js
 const selectSpecies = view(Inputs.select(species, {value: species, multiple: true, label: "Select species"}));
 ```
@@ -45,6 +48,7 @@ const tags = tidy(
   filter((d) => d.n > 2)
 );
 ```
+
 ```js
 const selectTag = view(
   Inputs.select(
@@ -57,6 +61,7 @@ const selectTag = view(
     )
   );
 ```
+
 ```js
 display(selectTag)
 ```

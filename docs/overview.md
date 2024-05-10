@@ -7,8 +7,8 @@ toc: false
 # Trout and salmon number of observations
 
 ```js
-const cdwb = FileAttachment("data/all_for_obs.csv").csv({typed: true});
-//const cdwb = FileAttachment("data/all_for_obs.json").json();
+//const cdwb = FileAttachment("data/all_for_obs.csv").csv({typed: true});
+const cdwb = FileAttachment("data/cdwb.json").json();
 ```
 
 ```js
@@ -199,7 +199,9 @@ display(cdwbFiltered)
 const rangeHeight = (Inputs.range([200, 2000], {step: 10, value: 600, label: 'Chart height'}));
 const selectedRangeHeight = Generators.input(rangeHeight);
 ```
+
 In the chart below, sybmol colors are individuals (blue is untagged), size of the symbol is proportional to fish length and the symbol represents survey type. The chart is facetted by river and cohort.
+
 <div class="card">
   <div style="display: flex; flex-direction: column; align-items: flex-end;">${rangeHeight}</div>
   <div> </div>
@@ -212,10 +214,5 @@ In the chart below, sybmol colors are individuals (blue is untagged), size of th
     )
   }
 </div>
-
-<div class = "small note">
-  small note
-</div>
-
 
 ToDo: fix the scale for r, so r doesn't change as observedLength is filtered

@@ -16,10 +16,12 @@ d <- all |>
   mutate(
     tag = ifelse(is.na(tag), "untagged", tag),
     nPerInd = ifelse(tag == "untagged", 1, nPerInd)
-    ) |>
+  ) |>
   group_by(tag) |>
     arrange(detectionDate) |>
   ungroup()
 
 # write_json(d, "./docs/data/all_for_obs.json") # this is 98 mB vs 60 for csv 
-write.csv(d, "./docs/data/all_for_obs.csv")
+#write.csv(d, "./docs/data/all_for_obs.csv")
+
+cat(toJSON(d))

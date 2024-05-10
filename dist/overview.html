@@ -15,7 +15,6 @@
 <link rel="modulepreload" href="./_import/components/overview.bbf384ba.js">
 <link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.14/_esm.js">
 <link rel="modulepreload" href="./_npm/d3@7.9.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/_esm.js">
 <link rel="modulepreload" href="./_observablehq/stdlib/inputs.js">
 <link rel="modulepreload" href="./_npm/htl@0.3.1/_esm.js">
 <link rel="modulepreload" href="./_npm/isoformat@0.2.1/_esm.js">
@@ -29,6 +28,7 @@
 <link rel="modulepreload" href="./_npm/d3-delaunay@6.0.4/_esm.js">
 <link rel="modulepreload" href="./_npm/d3-dispatch@3.0.1/_esm.js">
 <link rel="modulepreload" href="./_npm/d3-drag@3.0.0/_esm.js">
+<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/_esm.js">
 <link rel="modulepreload" href="./_npm/d3-ease@3.0.1/_esm.js">
 <link rel="modulepreload" href="./_npm/d3-fetch@3.0.1/_esm.js">
 <link rel="modulepreload" href="./_npm/d3-force@3.0.0/_esm.js">
@@ -58,11 +58,11 @@
 import {define} from "./_observablehq/client.js";
 import {registerFile} from "./_observablehq/stdlib.js";
 
-registerFile("./data/all_for_obs.csv", {"name":"./data/all_for_obs.csv","mimeType":"text/csv","path":"./_file/data/all_for_obs.fe32f775.csv","lastModified":1714768066461});
+registerFile("./data/cdwb.json", {"name":"./data/cdwb.json","mimeType":"application/json","path":"./_file/data/cdwb.2c1a29cf.json","lastModified":1715355603923});
 
-define({id: "accc9e48", inputs: ["FileAttachment"], outputs: ["cdwb"], body: (FileAttachment) => {
-const cdwb = FileAttachment("./data/all_for_obs.csv").csv({typed: true});
-//const cdwb = FileAttachment("data/all_for_obs.json").json();
+define({id: "ebe4b599", inputs: ["FileAttachment"], outputs: ["cdwb"], body: (FileAttachment) => {
+//const cdwb = FileAttachment("data/all_for_obs.csv").csv({typed: true});
+const cdwb = FileAttachment("./data/cdwb.json").json();
 return {cdwb};
 }});
 
@@ -301,7 +301,7 @@ resize((width) => plotSelectedByInd(
 <div id="observablehq-center">
 <main id="observablehq-main" class="observablehq">
 <h1 id="trout-and-salmon-number-of-observations" tabindex="-1"><a class="observablehq-header-anchor" href="#trout-and-salmon-number-of-observations">Trout and salmon number of observations</a></h1>
-<div id="cell-accc9e48" class="observablehq observablehq--block"></div>
+<div id="cell-ebe4b599" class="observablehq observablehq--block"></div>
 <div id="cell-f5df0968" class="observablehq observablehq--block"></div>
 <div id="cell-3aa31753" class="observablehq observablehq--block"></div>
 <!-- Cards with big numbers -->
@@ -392,13 +392,10 @@ resize((width) => plotSelectedByInd(
   <div> </div>
   <span id="cell-c8c06364" class="observablehq--loading"></span>
 </div>
-<div class="small note">
-  small note
-</div>
 <p>ToDo: fix the scale for r, so r doesn't change as observedLength is filtered</p>
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="prev" href="./"><span>Pit Antenna Data Explorer</span></a><a rel="next" href="./raw_data_by_ind"><span>Raw data by individual</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-05-06T15:13:54">May 6, 2024</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-05-10T11:47:42">May 10, 2024</a>.</div>
 </footer>
 </div>
