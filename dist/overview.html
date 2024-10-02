@@ -12,7 +12,7 @@
 <link rel="modulepreload" href="./_observablehq/client.js">
 <link rel="modulepreload" href="./_observablehq/runtime.js">
 <link rel="modulepreload" href="./_observablehq/stdlib.js">
-<link rel="modulepreload" href="./_import/components/overview.bbf384ba.js">
+<link rel="modulepreload" href="./_import/components/overviewGraphs.ea645b7e.js">
 <link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.14/_esm.js">
 <link rel="modulepreload" href="./_npm/d3@7.9.0/_esm.js">
 <link rel="modulepreload" href="./_observablehq/stdlib/inputs.js">
@@ -66,8 +66,8 @@ const cdwb = FileAttachment("./data/cdwb.json").json();
 return {cdwb};
 }});
 
-define({id: "f5df0968", outputs: ["barChartOverview","plotSelectedByInd"], body: async () => {
-const {barChartOverview, plotSelectedByInd} = await import("./_import/components/overview.bbf384ba.js");
+define({id: "8135a50a", outputs: ["barChartOverview","plotSelectedByInd"], body: async () => {
+const {barChartOverview, plotSelectedByInd} = await import("./_import/components/overviewGraphs.ea645b7e.js");
 //import {interval} from 'https://observablehq.com/@mootari/range-slider';
 return {barChartOverview,plotSelectedByInd};
 }});
@@ -292,9 +292,19 @@ resize((width) => plotSelectedByInd(
     <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
     <li class="observablehq-link"><a href="./">Pit Antenna Data Explorer</a></li>
   </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const a=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(a.classList.add("observablehq-sidebar-open"),t.focus(),t.select(),e.preventDefault())}),t.addEventListener("blur",()=>a.classList.remove("observablehq-sidebar-open"));}</script>
   <ol>
-    <li class="observablehq-link observablehq-link-active"><a href="./overview">Filter data</a></li>
-    <li class="observablehq-link"><a href="./raw_data_by_ind">Raw data by individual</a></li>
+    <section class="observablehq-section-active">
+      <summary>Examples</summary>
+      <ol>
+    <li class="observablehq-link observablehq-link-active"><a href="./overview.html">Overview</a></li>
+    <li class="observablehq-link"><a href="./overview2.html">Overview2</a></li>
+    <li class="observablehq-link"><a href="./overviewParquet.html">Overview - parquet sql</a></li>
+    <li class="observablehq-link"><a href="./rawDataByInd.html">By individual</a></li>
+      </ol>
+    </section>
   </ol>
 </nav>
 <script>{Object.assign(document.createElement("a"),{href:""}).password&&location.replace(location.href);const e=document.querySelector("#observablehq-sidebar"),t=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?t.checked=r==="true":t.indeterminate=!0;for(const o of document.querySelectorAll("#observablehq-sidebar summary")){const s=o.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${o.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
@@ -302,7 +312,7 @@ resize((width) => plotSelectedByInd(
 <main id="observablehq-main" class="observablehq">
 <h1 id="trout-and-salmon-number-of-observations" tabindex="-1"><a class="observablehq-header-anchor" href="#trout-and-salmon-number-of-observations">Trout and salmon number of observations</a></h1>
 <div id="cell-ebe4b599" class="observablehq observablehq--block"></div>
-<div id="cell-f5df0968" class="observablehq observablehq--block"></div>
+<div id="cell-8135a50a" class="observablehq observablehq--block"></div>
 <div id="cell-3aa31753" class="observablehq observablehq--block"></div>
 <!-- Cards with big numbers -->
 <div class="grid grid-cols-3">
@@ -395,7 +405,7 @@ resize((width) => plotSelectedByInd(
 <p>ToDo: fix the scale for r, so r doesn't change as observedLength is filtered</p>
 </main>
 <footer id="observablehq-footer">
-<nav><a rel="prev" href="./"><span>Pit Antenna Data Explorer</span></a><a rel="next" href="./raw_data_by_ind"><span>Raw data by individual</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-05-10T11:47:42">May 10, 2024</a>.</div>
+<nav><a rel="prev" href="./"><span>Pit Antenna Data Explorer</span></a><a rel="next" href="./overview2.html"><span>Overview2</span></a></nav>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-09-19T10:52:38">Sep 19, 2024</a>.</div>
 </footer>
 </div>

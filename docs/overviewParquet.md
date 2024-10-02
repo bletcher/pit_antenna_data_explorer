@@ -1,15 +1,38 @@
 ---
 theme: dashboard
-title: Filter data
-toc: false
+sql:
+  cdwb0: ./data/parquet/part-0.parquet
 ---
 
 # Trout and salmon number of observations
 
+Assign the parquet promise to an id and display a table
+
+```sql id=cdwb00 echo=true display
+SELECT * FROM cdwb0 ORDER BY tag, detectionDate
+```
+
+
+
+
 ```js
 //const cdwb = FileAttachment("data/all_for_obs.csv").csv({typed: true});
 const cdwb = FileAttachment("data/cdwb.json").json();
+//const cdwb0 = FileAttachment("data/parquet/part-0.parquet").parquet();
 ```
+
+```js
+display(cdwb);
+```
+
+```js
+display(cdwb00);
+```
+
+```sql id=wbTMP
+SELECT * FROM cdwb0
+```
+
 
 ```js
 import {barChartOverview, plotSelectedByInd} from "./components/overviewGraphs.js";
@@ -21,6 +44,9 @@ cdwb.map(d => d.newDate = new Date(d.detectionDate));
 ```
 
 <!-- Cards with big numbers -->
+
+# next step is to use sql for the operations
+
 
 <div class="grid grid-cols-3">
   <div class="card">
@@ -37,7 +63,7 @@ cdwb.map(d => d.newDate = new Date(d.detectionDate));
   </div>
 </div>
 
-<hr></hr>
+---
 
 <div class="grid grid-cols-3">
   <div class="card">
@@ -75,7 +101,7 @@ cdwb.map(d => d.newDate = new Date(d.detectionDate));
 const radioIncludeUntagged = view(Inputs.radio([true, false], {value: true, label: "Include untagged fish?"}));
 ```
 
-<hr>
+---
 
 ```js
 const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort().filter(d => isFinite(d));
@@ -154,7 +180,7 @@ const cdwbFiltered = cdwbFiltered0.filter(
 )
 ```
 
-<hr></hr>
+---
 
 ```js
 const extentLength = (d3.extent(cdwbFiltered0.map(d => d.observedLength)))
