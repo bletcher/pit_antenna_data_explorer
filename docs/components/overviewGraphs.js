@@ -167,7 +167,8 @@ export function plotSelectedByInd3(dataIn, surveySet, rangeHeight, selectedToolT
         stroke: "tag", symbol: "survey", 
         tip: selectedToolTip ? true : false,
         //r: (d) => d.observedLength === "NA" ? 12 : d.observedLength,
-        fy: "cohort", fx: "riverOrdered"
+        fy: "cohort", fx: "riverOrdered",
+        title: "tag"
       }),
       Plot.dot(dataIn, 
         Plot.pointer({
@@ -177,7 +178,8 @@ export function plotSelectedByInd3(dataIn, surveySet, rangeHeight, selectedToolT
         fill: "tag",
         r: 8,
         fy: "cohort", fx: "riverOrdered",
-        maxRadius: 8
+        maxRadius: 8,
+        title: "tag"
       })),
       Plot.line(dataIn.filter(d => d.tag !== "untagged"), {
         x: "detectionDate", y: "sectionN", stroke: "tag",
@@ -198,6 +200,39 @@ export function plotSelectedByInd3(dataIn, surveySet, rangeHeight, selectedToolT
       Plot.axisY({fontSize: "13px"})
     ]
   });
+
+
+    //https://observablehq.com/@mcmcclur/a-plot-selection-hack
+    let mousedDot = null;
+
+    d3
+      .select(plot)
+      .selectAll('path, circle')
+      .on("mouseover", function () {
+          mousedDot = d3.select(this).select("title").text();
+          console.log(mousedDot);
+
+          d3.select(plot)
+            .selectAll('path, circle')
+            .each(function() {
+              let titleElement = d3.select(this).select("title"); // this is the tag #
+
+              if (!titleElement.empty()) {
+                  if (titleElement.text() !== mousedDot) {
+                      d3.select(this).attr("stroke-width", 1).attr("opacity", 0.2);
+                  } else {
+                      d3.select(this).attr("stroke-width", 8).raise();
+                  }
+              } else {
+                  d3.select(this).attr("stroke-width", 1);
+              }
+          });
+      })
+      .on("mouseout", function () {
+          d3.select(plot).selectAll('path, circle').attr("stroke-width", 1).attr("opacity", 1);
+      });
+
+
 /*
   d3.select(plot)
     .selectAll("path")
@@ -235,7 +270,7 @@ export function plotSelectedByInd3(dataIn, surveySet, rangeHeight, selectedToolT
         .attr("opacity", 1) // Reset opacity for all lines
         .attr("stroke-width", 1); // Reset line width for all lines
     });
-*/
+
 
   d3.select(plot)
     .selectAll("path")
@@ -245,7 +280,7 @@ export function plotSelectedByInd3(dataIn, surveySet, rangeHeight, selectedToolT
     });
   d3.select(plot).on("mouseout", function () {
     d3.select(plot).selectAll("path").attr("opacity", 1);
-  });
+  });*/
 
   return plot;
 }

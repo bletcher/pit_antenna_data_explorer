@@ -54,6 +54,7 @@ import { timeFormat } from 'd3-time-format';
       ]
     });
 
+    //https://observablehq.com/@mcmcclur/a-plot-selection-hack
     let mousedDot = null;
 
     d3

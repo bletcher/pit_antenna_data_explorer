@@ -10,15 +10,15 @@ export default {
      {
        name: "Examples",
        pages: [
-         {name: "Overview", path: "/overview2"},
-         {name: "By individual", path: "rawDataByInd"},
+         {name: "Overview", path: "/overview"},
          {name: "Size trajectories", path: "/sizeTrajectories"},
+         {name: "By individual", path: "rawDataByInd"}
        ]
      },
      {
       name: "Early versions",
       pages: [
-        {name: "Overview first version", path: "/overview"},
+        {name: "Overview first version", path: "/overviewFirst"},
         {name: "Overview - parquet sql", path: "/overviewParquet"},
       ]
     }
