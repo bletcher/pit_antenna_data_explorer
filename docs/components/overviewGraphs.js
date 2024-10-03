@@ -134,7 +134,7 @@ export function plotSelectedByInd2(dataIn, surveySet, rangeHeight, {width}) {
     ]
   });
 }
-export function plotSelectedByInd3(dataIn, surveySet, rangeHeight, {width}) {
+export function plotSelectedByInd3(dataIn, surveySet, rangeHeight, selectedToolTip, {width}) {
   const colorScale = Plot.scale({
     color: {
       type: "categorical",
@@ -154,7 +154,7 @@ export function plotSelectedByInd3(dataIn, surveySet, rangeHeight, {width}) {
   const formatDate = timeFormat("%Y-%m-%d");
   
   const plot = Plot.plot({
-    title: "Filtered dataset",
+    //title: "Filtered dataset",
     width,
     height: rangeHeight,
     x: {grid: true, label: "Date"},
@@ -163,24 +163,37 @@ export function plotSelectedByInd3(dataIn, surveySet, rangeHeight, {width}) {
     r: {domain: [0, 400], legend: true}, // domain doesn't seem to work
     marks: [
       Plot.dot(dataIn, {
-        x: "detectionDate", y: "riverMeter", stroke: "tag", symbol: "survey", 
-        //tip: true,
-        r: (d) => d.observedLength === "NA" ? 12 : d.observedLength,
+        x: "detectionDate", y: "sectionN", 
+        stroke: "tag", symbol: "survey", 
+        tip: selectedToolTip ? true : false,
+        //r: (d) => d.observedLength === "NA" ? 12 : d.observedLength,
         fy: "cohort", fx: "riverOrdered"
       }),
+      Plot.dot(dataIn, 
+        Plot.pointer({
+        x: "detectionDate", y: "sectionN", 
+        stroke: "tag", symbol: "survey", 
+        //tip: selectedToolTip ? true : false,
+        fill: "tag",
+        r: 8,
+        fy: "cohort", fx: "riverOrdered",
+        maxRadius: 8
+      })),
       Plot.line(dataIn.filter(d => d.tag !== "untagged"), {
-        x: "detectionDate", y: "riverMeter", stroke: "tag",
+        x: "detectionDate", y: "sectionN", stroke: "tag",
         fy: "cohort", fx: "riverOrdered"
       }),
+      /* This creates a tooltip with the date and tag value, but it is relative to facets not in fixed location
       Plot.text(dataIn, 
-        Plot.pointerX({
+        Plot.pointer({
           px: "detectionDate", 
-          py: "riverMeter", 
-          dy: -56, dx: -38, 
-          frameAnchor: "top-left", 
+          py: "sectionN", 
+          dy: -10, dx: 0, 
+          frameAnchor: "top", 
           fontVariant: "tabular-nums", 
           text: (d) => [`Date ${formatDate(new Date(d.detectionDate))}`, `tag = ${d.tag}`].join("   ")
       })),
+      */
       Plot.axisX({fontSize: "15px"}),
       Plot.axisY({fontSize: "13px"})
     ]

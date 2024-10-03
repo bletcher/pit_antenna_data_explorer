@@ -19,54 +19,14 @@ cdwb.forEach(d => {
   const lagDetectionDate = new Date(d.lagDetectionDate); 
   d.detectionDate = detectionDate;
   d.lagDetectionDate = lagDetectionDate;
+  d.title = d.tag
 });
 ```
 
 ```js
-import {barChartOverview, plotSelectedByInd2, plotSelectedByInd3} from "./components/overviewGraphs.js";
+import {plotSizeTrajectories} from "./components/sizeTrajectoriesGraphs.js";
 //import {interval} from 'https://observablehq.com/@mootari/range-slider';
 ```
-
-
-<!-- Cards with big numbers -->
-
-<div class="wrapper1">
-  <div class="card countsGraph">
-    ${resize((width) => barChartOverview(cdwb, {width}))}
-  </div>
-  <div class="summaryVertical">
-    <b style="font-size: 28px;">Counts</b>
-    <div class="card">
-      <h2>Brook trout</h2>
-      <span class="big">${cdwb.filter((d) => d.species === "bkt").length.toLocaleString("en-US")}</span>
-    </div>
-    <div class="card">
-      <h2>Brown trout</h2>
-      <span class="big">${cdwb.filter((d) => d.species === "bnt").length.toLocaleString("en-US")}</span>
-    </div>
-    <div class="card">
-      <h2>Atlantic salmon</h2>
-      <span class="big">${cdwb.filter((d) => d.species === "ats").length.toLocaleString("en-US")}</span>
-    </div>
-    <hr>
-    <div class="card">
-      <h2>Shocking</h2>
-      <span class="big">${cdwb.filter((d) => d.survey === "shock").length.toLocaleString("en-US")}</span>
-    </div>
-      <div class="card">
-      <h2>Stationary antenna</h2>
-      <span class="big">${cdwb.filter((d) => d.survey === "stationaryAntenna").length.toLocaleString("en-US")}</span>
-    </div>
-      <div class="card">
-      <h2>Portable antenna</h2>
-      <span class="big">${cdwb.filter((d) => d.survey === "portableAntenna").length.toLocaleString("en-US")}</span>
-    </div>
-  </div>
-</div>
-
-<div class = "small note">
-  Survey type "portableAntenna" is missing `riverMeter`, so those data don't get y-axis value on the plot currently. Need to add `riverMeter` at the WBBook stage.
-</div>
 
 ```js
 const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort().filter(d => isFinite(d));
@@ -149,7 +109,7 @@ const surveysMap = new Map([
       ${rangeHeight}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${selectToolTip}
     </div>
     <div>
-      ${plotSelectedByInd3(
+      ${plotSizeTrajectories(
         cdwbFiltered,
         surveys,
         selectedRangeHeight,
@@ -216,17 +176,16 @@ const rangeMaxN = (Inputs.range([rangeMinN, d3.max(cdwbFiltered0, d => d.nPerInd
 const selectedRangeMaxN = Generators.input(rangeMaxN);
 ```
 
-Number of rows in filtered dataset: ${cdwbFiltered.length}
+Number of rows in filtered dataset: ${cdwbFiltered.length}  
+
+```js
+const uniqueTags = new Set(cdwbFiltered.map(d => d.tag));
+```
+
+Number of **individuals** in filtered dataset: ${uniqueTags.size}
 
 ```js
 display(cdwbFiltered)
 ```
 
-<hr>
-
-
-
-In the chart above, symbol colors are individuals (blue is untagged), size of the symbol is proportional to fish length and the symbol represents survey type. The chart is facetted by river and cohort.  
-Mouse over the line to see the individual ID.
-
-ToDo: fix the scale for r, so r doesn't change as observedLength is filtered
+---
