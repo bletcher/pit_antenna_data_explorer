@@ -5,7 +5,7 @@ import {groupSort} from "npm:d3";
 import { timeFormat } from 'd3-time-format';
 
 
-  export function plotSizeTrajectories(dataIn, surveySet, rangeHeight, selectedToolTip, {width}) {
+  export function plotSizeTrajectories(dataIn,  rangeHeight, selectedToolTip, {width}) {
     const colorScale = Plot.scale({
       color: {
         type: "categorical",
@@ -13,14 +13,7 @@ import { timeFormat } from 'd3-time-format';
         unknown: "var(--theme-foreground-muted)"
       }
     });
-  
-    const symbolScale = Plot.scale({
-      symbol: {
-        type: "categorical",
-        domain: surveySet,
-        unknown: "var(--theme-foreground-muted)"
-      }
-    });
+
   
     const formatDate = timeFormat("%Y-%m-%d");
     
@@ -30,12 +23,13 @@ import { timeFormat } from 'd3-time-format';
       height: rangeHeight,
       x: {grid: true, label: "Date"},
       color: {...colorScale, legend: false},
-      symbol: {...symbolScale, legend: true},
+      //symbol: {...symbolScale, legend: true},
       //r: {domain: [0, 400], legend: true}, // domain doesn't seem to work
       marks: [
         Plot.dot(dataIn, {
           x: "detectionDate", y: "observedLength", 
-          stroke: "tag", symbol: "survey", 
+          stroke: "tag", //symbol: "survey", 
+          r: 5,
           tip: selectedToolTip ? true : false,
           fy: "cohort", fx: "riverOrdered",
           title: "tag"
@@ -53,7 +47,7 @@ import { timeFormat } from 'd3-time-format';
         */
         Plot.line(dataIn.filter(d => d.tag !== "untagged"), {
           x: "detectionDate", y: "observedLength", 
-          stroke: "tag", symbol: "survey", 
+          stroke: "tag", //symbol: "survey", 
           fy: "cohort", fx: "riverOrdered",
           title: "tag"
         })
@@ -64,18 +58,21 @@ import { timeFormat } from 'd3-time-format';
 
     d3
       .select(plot)
-      .selectAll('path')
+      .selectAll('path, circle')
       .on("mouseover", function () {
           mousedDot = d3.select(this).select("title").text();
           console.log(mousedDot);
 
-          d3.select(plot).selectAll('path').each(function() {
-              let titleElement = d3.select(this).select("title");
+          d3.select(plot)
+            .selectAll('path, circle')
+            .each(function() {
+              let titleElement = d3.select(this).select("title"); // this is the tag #
+
               if (!titleElement.empty()) {
                   if (titleElement.text() !== mousedDot) {
-                      d3.select(this).attr("stroke-width", 1);
+                      d3.select(this).attr("stroke-width", 1).attr("opacity", 0.2);
                   } else {
-                      d3.select(this).attr("stroke-width", 8);
+                      d3.select(this).attr("stroke-width", 8).raise();
                   }
               } else {
                   d3.select(this).attr("stroke-width", 1);
@@ -83,7 +80,7 @@ import { timeFormat } from 'd3-time-format';
           });
       })
       .on("mouseout", function () {
-          d3.select(plot).selectAll('path').attr("stroke-width", 1);
+          d3.select(plot).selectAll('path, circle').attr("stroke-width", 1).attr("opacity", 1);
       });
 
     return plot;

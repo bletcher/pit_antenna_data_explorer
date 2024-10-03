@@ -41,9 +41,9 @@ const rivers = [...new Set(cdwb.map(d => d.riverOrdered))].sort();
 const selectRiversOV = (Inputs.select(riversMap, {value: rivers, multiple: true, width: 120}));
 const selectedRivers = Generators.input(selectRiversOV);
 
-const surveys = [...new Set(cdwb.map(d => d.survey))];
-const selectSurveysOV = (Inputs.select(surveysMap, {value: surveys, multiple: true, width: 160}));
-const selectedSurveys = Generators.input(selectSurveysOV);
+//const surveys = [...new Set(cdwb.map(d => d.survey))];
+//const selectSurveysOV = (Inputs.select(surveysMap, {value: surveys, multiple: true, width: 160}));
+//const selectedSurveys = Generators.input(selectSurveysOV);
 
 const radioIncludeUntagged = (Inputs.radio([true, false], {value: true, label: "Include untagged fish?"}));
 const selectedIncludeUntagged = Generators.input(radioIncludeUntagged);
@@ -92,10 +92,6 @@ const surveysMap = new Map([
       <h2>Select rivers:</h2>
       ${selectRiversOV}
     </div>
-    <div style="margin-top: 20px">
-      <h2>Select survey:</h2>
-      ${selectSurveysOV}
-    </div>
     <hr>
     ${rangeMinLength}
     ${rangeMaxLength}
@@ -111,7 +107,6 @@ const surveysMap = new Map([
     <div>
       ${plotSizeTrajectories(
         cdwbFiltered,
-        surveys,
         selectedRangeHeight,
         selectedToolTip,
         {width}
@@ -123,7 +118,7 @@ const surveysMap = new Map([
 ```js
 const cdwbFiltered0 = cdwb.filter(
   d => {
-    if(radioIncludeUntagged) {
+    if(selectedIncludeUntagged) {
       return true;
     } else {
       return d.tag !== "untagged"
@@ -132,38 +127,24 @@ const cdwbFiltered0 = cdwb.filter(
 ```
 
 ```js
-
-const cdwbFiltered = cdwbFiltered0.filter(
-  d => {
-    if(d.survey === "shock") {
-      return d.riverMeter > 4000 && 
-        selectedSpecies.includes(d.species) &&
-        selectedCohorts.includes(d.cohort) &&
-        selectedRivers.includes(d.riverOrdered) &&
-        selectedSurveys.includes(d.survey) &&
-        d.observedLength >= selectedRangeMinLength &&
-        d.observedLength <= selectedRangeMaxLength &&
-        d.nPerInd >= selectedRangeMinN &&
-        d.nPerInd <= selectedRangeMaxN;
-    } else if(d.survey === "stationaryAntenna") {
-      return d.riverMeter > 0 && 
-        selectedSpecies.includes(d.species) &&
-        selectedCohorts.includes(d.cohort) &&
-        selectedRivers.includes(d.riverOrdered) &&
-        selectedSurveys.includes(d.survey);
-    } else if(d.survey === "portableAntenna") {
-       return selectedSpecies.includes(d.species) && // need to add riverMeter to survey==portableAntenna
-        selectedCohorts.includes(d.cohort) &&
-        selectedRivers.includes(d.riverOrdered) &&
-        selectedSurveys.includes(d.survey);
-    }
-  }
-)
+const cdwbFiltered = cdwbFiltered0.filter(d => {
+  return (
+    d.riverMeter > 4000 &&
+    selectedSpecies.includes(d.species) &&
+    selectedCohorts.includes(d.cohort) &&
+    selectedRivers.includes(d.riverOrdered) &&
+    d.observedLength >= selectedRangeMinLength &&
+    d.observedLength <= selectedRangeMaxLength &&
+    d.nPerInd >= selectedRangeMinN &&
+    d.nPerInd <= selectedRangeMaxN
+  );
+});
 ```
 
 ---
 
 ```js
+//These need to be here to avoid circular dependencies
 const extentLength = (d3.extent(cdwbFiltered0.map(d => d.observedLength)))
 const rangeMinLength = (Inputs.range([extentLength[0], extentLength[1]], {step: 10, value: extentLength[0], label: 'Minimum fish length:'}));
 const selectedRangeMinLength = Generators.input(rangeMinLength);
