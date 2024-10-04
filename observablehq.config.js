@@ -11,7 +11,7 @@ export default {
        name: "Examples",
        pages: [
          {name: "Overview", path: "/overview"},
-         {name: "Size trajectories", path: "/sizeTrajectories"},
+         {name: "Variables over time", path: "/overTime"},
          {name: "By individual", path: "rawDataByInd"}
        ]
      },

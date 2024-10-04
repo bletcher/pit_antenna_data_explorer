@@ -5,11 +5,19 @@ import {groupSort} from "npm:d3";
 import { timeFormat } from 'd3-time-format';
 
 
-  export function plotSizeTrajectories(dataIn,  rangeHeight, selectedToolTip, {width}) {
+  export function plotOverTime(dataIn, variableIn, surveySet, rangeHeight, selectedToolTip, riversMap, {width}) {
     const colorScale = Plot.scale({
       color: {
         type: "categorical",
         domain: groupSort(dataIn, (D) => -D.length, (d) => d.tag),
+        unknown: "var(--theme-foreground-muted)"
+      }
+    });
+
+    const symbolScale = Plot.scale({
+      symbol: {
+        type: "categorical",
+        domain: surveySet,
         unknown: "var(--theme-foreground-muted)"
       }
     });
@@ -21,14 +29,15 @@ import { timeFormat } from 'd3-time-format';
       //title: "Filtered dataset",
       width,
       height: rangeHeight,
-      x: {grid: true, label: "Date"},
+      x: {grid: true, nice: true, label: "Date"},
       color: {...colorScale, legend: false},
-      //symbol: {...symbolScale, legend: true},
-      //r: {domain: [0, 400], legend: true}, // domain doesn't seem to work
+      symbol: {...symbolScale, legend: true},
+      facet: {label: "River", fontSize: "14px"},
       marks: [
+        Plot.frame({stroke: "lightgrey"}),
         Plot.dot(dataIn, {
-          x: "detectionDate", y: "observedLength", 
-          stroke: "tag", //symbol: "survey", 
+          x: "detectionDate", y: variableIn, 
+          stroke: "tag", symbol: "survey", 
           r: 5,
           tip: selectedToolTip ? true : false,
           fy: "cohort", fx: "riverOrdered",
@@ -46,11 +55,13 @@ import { timeFormat } from 'd3-time-format';
         })),
         */
         Plot.line(dataIn.filter(d => d.tag !== "untagged"), {
-          x: "detectionDate", y: "observedLength", 
-          stroke: "tag", //symbol: "survey", 
+          x: "detectionDate", y: variableIn, 
+          stroke: "tag",
           fy: "cohort", fx: "riverOrdered",
           title: "tag"
-        })
+        }),
+        Plot.axisX({fontSize: "14px"}),
+        Plot.axisY({fontSize: "12px"})
       ]
     });
 

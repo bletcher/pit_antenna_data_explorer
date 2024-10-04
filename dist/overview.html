@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Filter data | Pit Antenna Data Explorer</title>
+<title>Pit Antenna Data Explorer</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
-<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight,alt,wide.css">
+<link rel="preload" as="style" href="./_import/gridCustom.fd742ebe.css">
 <link rel="preload" as="style" href="./_observablehq/stdlib/inputs.css">
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
-<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight,alt,wide.css">
+<link rel="stylesheet" type="text/css" href="./_import/gridCustom.fd742ebe.css">
 <link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.css">
 <link rel="modulepreload" href="./_observablehq/client.js">
 <link rel="modulepreload" href="./_observablehq/runtime.js">
 <link rel="modulepreload" href="./_observablehq/stdlib.js">
-<link rel="modulepreload" href="./_import/components/overviewGraphs.4e7876f0.js">
+<link rel="modulepreload" href="./_import/components/overviewGraphs.ddc90dc1.js">
 <link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.14/_esm.js">
 <link rel="modulepreload" href="./_npm/d3@7.9.0/_esm.js">
 <link rel="modulepreload" href="./_node/d3-time-format@4.1.0/index.js">
@@ -64,20 +64,36 @@ import {registerFile} from "./_observablehq/stdlib.js";
 
 registerFile("./data/cdwb.json", {"name":"./data/cdwb.json","mimeType":"application/json","path":"./_file/data/cdwb.2c1a29cf.json","lastModified":1715355603923});
 
-define({id: "ebe4b599", inputs: ["FileAttachment"], outputs: ["cdwb"], body: (FileAttachment) => {
+define({id: "228db81c", inputs: ["FileAttachment"], outputs: ["cdwbIn"], body: (FileAttachment) => {
 //const cdwb = FileAttachment("data/all_for_obs.csv").csv({typed: true});
-const cdwb = FileAttachment("./data/cdwb.json").json();
+const cdwbIn = FileAttachment("./data/cdwb.json").json(); // this is a lot faster than the parquet file
+//const cdwbIn = FileAttachment("data/parquet/part-0.parquet").parquet();
+return {cdwbIn};
+}});
+
+define({id: "c19e67a5", inputs: ["cdwbIn"], outputs: ["cdwb"], body: (cdwbIn) => {
+const cdwb = [...cdwbIn];
+
+cdwb.forEach(d => {
+  const detectionDate = new Date(d.detectionDate); 
+  const lagDetectionDate = new Date(d.lagDetectionDate); 
+  d.detectionDate = detectionDate;
+  d.lagDetectionDate = lagDetectionDate;
+  d.title = d.tag
+});
 return {cdwb};
 }});
 
-define({id: "8135a50a", outputs: ["barChartOverview","plotSelectedByInd"], body: async () => {
-const {barChartOverview, plotSelectedByInd} = await import("./_import/components/overviewGraphs.4e7876f0.js");
+define({id: "3e5a84fd", outputs: ["barChartOverview","plotSelectedByInd2","plotSelectedByInd3"], body: async () => {
+const {barChartOverview, plotSelectedByInd2, plotSelectedByInd3} = await import("./_import/components/overviewGraphs.ddc90dc1.js");
 //import {interval} from 'https://observablehq.com/@mootari/range-slider';
-return {barChartOverview,plotSelectedByInd};
+return {barChartOverview,plotSelectedByInd2,plotSelectedByInd3};
 }});
 
-define({id: "3aa31753", inputs: ["cdwb"], body: (cdwb) => {
-cdwb.map(d => d.newDate = new Date(d.detectionDate));
+define({id: "b18bf5a1", inline: true, inputs: ["resize","barChartOverview","cdwb","display"], body: async (resize,barChartOverview,cdwb,display) => {
+display(await(
+resize((width) => barChartOverview(cdwb, {width}))
+))
 }});
 
 define({id: "7ea546c8", inline: true, inputs: ["cdwb","display"], body: async (cdwb,display) => {
@@ -116,39 +132,54 @@ cdwb.filter((d) => d.survey === "portableAntenna").length.toLocaleString("en-US"
 ))
 }});
 
-define({id: "f4fe9542", body: () => {
-// Table of whole dataset.
-//const tableCDWB = view(Inputs.table(cdwb, {required: false}));
-}});
-
-define({id: "b18bf5a1", inline: true, inputs: ["resize","barChartOverview","cdwb","display"], body: async (resize,barChartOverview,cdwb,display) => {
-display(await(
-resize((width) => barChartOverview(cdwb, {width}))
-))
-}});
-
-define({id: "f4b3f7e4", inputs: ["view","Inputs"], outputs: ["radioIncludeUntagged"], body: (view,Inputs) => {
-const radioIncludeUntagged = view(Inputs.radio([true, false], {value: true, label: "Include untagged fish?"}));
-return {radioIncludeUntagged};
-}});
-
-define({id: "6125f5bd", inputs: ["cdwb","Inputs","Generators"], outputs: ["cohorts","selectCohortsOV","selectedCohorts","species","selectSpeciesOV","selectedSpecies","rivers","selectRiversOV","selectedRivers","surveys","selectSurveysOV","selectedSurveys"], body: (cdwb,Inputs,Generators) => {
+define({id: "3a531ef8", inputs: ["cdwb","Inputs","Generators","speciesMap","riversMap","surveysMap"], outputs: ["cohorts","selectCohortsOV","selectedCohorts","species","selectSpeciesOV","selectedSpecies","rivers","selectRiversOV","selectedRivers","surveys","selectSurveysOV","selectedSurveys","radioIncludeUntagged","selectedIncludeUntagged","rangeHeight","selectedRangeHeight","selectToolTip","selectedToolTip"], body: (cdwb,Inputs,Generators,speciesMap,riversMap,surveysMap) => {
 const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort().filter(d => isFinite(d));
-const selectCohortsOV = (Inputs.select(cohorts, {value: 2005, multiple: 8, width: 90, label: "Select cohorts"}));
+const selectCohortsOV = (Inputs.select(cohorts, {value: 2005, multiple: 8, width: 90}));
 const selectedCohorts = Generators.input(selectCohortsOV);
 
 const species = [...new Set(cdwb.map(d => d.species))].sort();
-const selectSpeciesOV = (Inputs.select(species, {value: species, multiple: true, width: 80, label: "Select species"}));
+const selectSpeciesOV = (Inputs.select(speciesMap, {value: species, multiple: true, width: 80}));
 const selectedSpecies = Generators.input(selectSpeciesOV);
 
 const rivers = [...new Set(cdwb.map(d => d.riverOrdered))].sort();
-const selectRiversOV = (Inputs.select(rivers, {value: rivers, multiple: true, width: 120, label: "Select rivers"}));
+const selectRiversOV = (Inputs.select(riversMap, {value: rivers, multiple: true, width: 120}));
 const selectedRivers = Generators.input(selectRiversOV);
 
 const surveys = [...new Set(cdwb.map(d => d.survey))];
-const selectSurveysOV = (Inputs.select(surveys, {value: surveys, multiple: true, width: 160, label: "Select surveys"}));
+const selectSurveysOV = (Inputs.select(surveysMap, {value: surveys, multiple: true, width: 160}));
 const selectedSurveys = Generators.input(selectSurveysOV);
-return {cohorts,selectCohortsOV,selectedCohorts,species,selectSpeciesOV,selectedSpecies,rivers,selectRiversOV,selectedRivers,surveys,selectSurveysOV,selectedSurveys};
+
+const radioIncludeUntagged = (Inputs.radio([true, false], {value: true, label: "Include untagged fish?"}));
+const selectedIncludeUntagged = Generators.input(radioIncludeUntagged);
+
+const rangeHeight = (Inputs.range([200, 2000], {step: 10, value: 950, label: 'Chart height'}));
+const selectedRangeHeight = Generators.input(rangeHeight);
+
+const selectToolTip = (Inputs.radio([true, false], {value: false, label: "Show tool tip?"}));
+const selectedToolTip = Generators.input(selectToolTip);
+return {cohorts,selectCohortsOV,selectedCohorts,species,selectSpeciesOV,selectedSpecies,rivers,selectRiversOV,selectedRivers,surveys,selectSurveysOV,selectedSurveys,radioIncludeUntagged,selectedIncludeUntagged,rangeHeight,selectedRangeHeight,selectToolTip,selectedToolTip};
+}});
+
+define({id: "97fee6d5", outputs: ["speciesMap","riversMap","surveysMap"], body: () => {
+const speciesMap = new Map([
+  ["Brook trout", "bkt"],
+  ["Brown trout", "bnt"],
+  ["Atlantic salmon", "ats"]
+]);
+
+const riversMap = new Map([
+  ["West brook", "West Brook"],
+  ["Open large", "WB Jimmy"],
+  ["Open small", "WB Mitchell"],
+  ["Isolated small", "WB OBear"]
+]);
+
+const surveysMap = new Map([
+  ["Electrofishing", "shock"],
+  ["Pit tag antenna", "stationaryAntenna"],
+  ["Pit tag wand", "portableAntenna"]
+]);
+return {speciesMap,riversMap,surveysMap};
 }});
 
 define({id: "eaa13441", inline: true, inputs: ["view","selectCohortsOV"], body: (view,selectCohortsOV) => {
@@ -170,6 +201,60 @@ selectRiversOV
 define({id: "58af2a53", inline: true, inputs: ["selectSurveysOV","display"], body: async (selectSurveysOV,display) => {
 display(await(
 selectSurveysOV
+))
+}});
+
+define({id: "58b998ff", inline: true, inputs: ["rangeMinLength","display"], body: async (rangeMinLength,display) => {
+display(await(
+rangeMinLength
+))
+}});
+
+define({id: "f8485b9b", inline: true, inputs: ["rangeMaxLength","display"], body: async (rangeMaxLength,display) => {
+display(await(
+rangeMaxLength
+))
+}});
+
+define({id: "3878e53a", inline: true, inputs: ["rangeMinN","display"], body: async (rangeMinN,display) => {
+display(await(
+rangeMinN
+))
+}});
+
+define({id: "813a093a", inline: true, inputs: ["rangeMaxN","display"], body: async (rangeMaxN,display) => {
+display(await(
+rangeMaxN
+))
+}});
+
+define({id: "00a3f06d", inline: true, inputs: ["radioIncludeUntagged","display"], body: async (radioIncludeUntagged,display) => {
+display(await(
+radioIncludeUntagged
+))
+}});
+
+define({id: "83128f99", inline: true, inputs: ["rangeHeight","display"], body: async (rangeHeight,display) => {
+display(await(
+rangeHeight
+))
+}});
+
+define({id: "fa587992", inline: true, inputs: ["selectToolTip","display"], body: async (selectToolTip,display) => {
+display(await(
+selectToolTip
+))
+}});
+
+define({id: "3f2a2cbc", inline: true, inputs: ["plotSelectedByInd3","cdwbFiltered","surveys","selectedRangeHeight","selectedToolTip","width","display"], body: async (plotSelectedByInd3,cdwbFiltered,surveys,selectedRangeHeight,selectedToolTip,width,display) => {
+display(await(
+plotSelectedByInd3(
+        cdwbFiltered,
+        surveys,
+        selectedRangeHeight,
+        selectedToolTip,
+        {width}
+      )
 ))
 }});
 
@@ -215,42 +300,18 @@ const cdwbFiltered = cdwbFiltered0.filter(
 return {cdwbFiltered};
 }});
 
-define({id: "ceb0ed69", inputs: ["d3","cdwbFiltered0","Inputs","Generators"], outputs: ["extentLength","rangeMinLength","selectedRangeMinLength","rangeMaxLength","selectedRangeMaxLength","rangeMinN","selectedRangeMinN","rangeMaxN","selectedRangeMaxN"], body: (d3,cdwbFiltered0,Inputs,Generators) => {
+define({id: "2ee2a303", inputs: ["d3","cdwbFiltered0","Inputs","Generators"], outputs: ["extentLength","rangeMinLength","selectedRangeMinLength","rangeMaxLength","selectedRangeMaxLength","rangeMinN","selectedRangeMinN","rangeMaxN","selectedRangeMaxN"], body: (d3,cdwbFiltered0,Inputs,Generators) => {
 const extentLength = (d3.extent(cdwbFiltered0.map(d => d.observedLength)))
-const rangeMinLength = (Inputs.range([extentLength[0], extentLength[1]], {step: 10, value: extentLength[0], label: 'Minimum fish length'}));
+const rangeMinLength = (Inputs.range([extentLength[0], extentLength[1]], {step: 10, value: extentLength[0], label: 'Minimum fish length:'}));
 const selectedRangeMinLength = Generators.input(rangeMinLength);
-const rangeMaxLength = (Inputs.range([rangeMinLength, extentLength[1]], {step: 10, value: extentLength[1], label: 'Maximum fish length'}));
+const rangeMaxLength = (Inputs.range([rangeMinLength, extentLength[1]], {step: 10, value: extentLength[1], label: 'Maximum fish length:'}));
 const selectedRangeMaxLength = Generators.input(rangeMaxLength);
 
-const rangeMinN = (Inputs.range([1, d3.max(cdwbFiltered0, d => d.nPerInd)], {step: 1, value: 1, label: 'Maximum num obs/fish'}));
+const rangeMinN = (Inputs.range([1, d3.max(cdwbFiltered0, d => d.nPerInd)], {step: 1, value: 1, label: 'Minimum num obs/fish:'}));
 const selectedRangeMinN = Generators.input(rangeMinN);
-const rangeMaxN = (Inputs.range([rangeMinN, d3.max(cdwbFiltered0, d => d.nPerInd)], {step: 1, value: d3.max(cdwbFiltered0, d => d.nPerInd), label: 'Maximum num obs/fish'}));
+const rangeMaxN = (Inputs.range([rangeMinN, d3.max(cdwbFiltered0, d => d.nPerInd)], {step: 1, value: d3.max(cdwbFiltered0, d => d.nPerInd), label: 'Maximum num obs/fish:'}));
 const selectedRangeMaxN = Generators.input(rangeMaxN);
 return {extentLength,rangeMinLength,selectedRangeMinLength,rangeMaxLength,selectedRangeMaxLength,rangeMinN,selectedRangeMinN,rangeMaxN,selectedRangeMaxN};
-}});
-
-define({id: "58b998ff", inline: true, inputs: ["rangeMinLength","display"], body: async (rangeMinLength,display) => {
-display(await(
-rangeMinLength
-))
-}});
-
-define({id: "f8485b9b", inline: true, inputs: ["rangeMaxLength","display"], body: async (rangeMaxLength,display) => {
-display(await(
-rangeMaxLength
-))
-}});
-
-define({id: "3878e53a", inline: true, inputs: ["rangeMinN","display"], body: async (rangeMinN,display) => {
-display(await(
-rangeMinN
-))
-}});
-
-define({id: "813a093a", inline: true, inputs: ["rangeMaxN","display"], body: async (rangeMaxN,display) => {
-display(await(
-rangeMaxN
-))
 }});
 
 define({id: "61648a6d", inline: true, inputs: ["cdwbFiltered","display"], body: async (cdwbFiltered,display) => {
@@ -261,31 +322,6 @@ cdwbFiltered.length
 
 define({id: "39b09ccd", inputs: ["display","cdwbFiltered"], body: (display,cdwbFiltered) => {
 display(cdwbFiltered)
-}});
-
-define({id: "45b4e53d", inputs: ["Inputs","Generators"], outputs: ["rangeHeight","selectedRangeHeight"], body: (Inputs,Generators) => {
-const rangeHeight = (Inputs.range([200, 2000], {step: 10, value: 600, label: 'Chart height'}));
-const selectedRangeHeight = Generators.input(rangeHeight);
-return {rangeHeight,selectedRangeHeight};
-}});
-
-define({id: "83128f99", inline: true, inputs: ["rangeHeight","display"], body: async (rangeHeight,display) => {
-display(await(
-rangeHeight
-))
-}});
-
-define({id: "c8c06364", inline: true, inputs: ["resize","plotSelectedByInd","cdwbFiltered","surveys","selectedRangeHeight","display"], body: async (resize,plotSelectedByInd,cdwbFiltered,surveys,selectedRangeHeight,display) => {
-display(await(
-resize((width) => plotSelectedByInd(
-      cdwbFiltered,
-      surveys,
-      selectedRangeHeight,
-      {width}
-    )
-    )
-  
-))
 }});
 
 </script>
@@ -300,18 +336,18 @@ resize((width) => plotSelectedByInd(
   <div id="observablehq-search-results"></div>
   <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const a=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(a.classList.add("observablehq-sidebar-open"),t.focus(),t.select(),e.preventDefault())}),t.addEventListener("blur",()=>a.classList.remove("observablehq-sidebar-open"));}</script>
   <ol>
-    <section>
+    <section class="observablehq-section-active">
       <summary>Examples</summary>
       <ol>
-    <li class="observablehq-link"><a href="./overview2.html">Overview</a></li>
-    <li class="observablehq-link"><a href="./rawDataByInd.html">By individual</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./overview.html">Overview</a></li>
     <li class="observablehq-link"><a href="./sizeTrajectories.html">Size trajectories</a></li>
+    <li class="observablehq-link"><a href="./rawDataByInd.html">By individual</a></li>
       </ol>
     </section>
-    <section class="observablehq-section-active">
+    <section>
       <summary>Early versions</summary>
       <ol>
-    <li class="observablehq-link observablehq-link-active"><a href="./overview.html">Overview first version</a></li>
+    <li class="observablehq-link"><a href="./overviewFirst.html">Overview first version</a></li>
     <li class="observablehq-link"><a href="./overviewParquet.html">Overview - parquet sql</a></li>
       </ol>
     </section>
@@ -320,102 +356,98 @@ resize((width) => plotSelectedByInd(
 <script>{Object.assign(document.createElement("a"),{href:""}).password&&location.replace(location.href);const e=document.querySelector("#observablehq-sidebar"),t=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?t.checked=r==="true":t.indeterminate=!0;for(const o of document.querySelectorAll("#observablehq-sidebar summary")){const s=o.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${o.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
 <div id="observablehq-center">
 <main id="observablehq-main" class="observablehq">
-<h1 id="trout-and-salmon-number-of-observations" tabindex="-1"><a class="observablehq-header-anchor" href="#trout-and-salmon-number-of-observations">Trout and salmon number of observations</a></h1>
-<div id="cell-ebe4b599" class="observablehq observablehq--block"></div>
-<div id="cell-8135a50a" class="observablehq observablehq--block"></div>
-<div id="cell-3aa31753" class="observablehq observablehq--block"></div>
+<div id="cell-228db81c" class="observablehq observablehq--block"></div>
+<div id="cell-c19e67a5" class="observablehq observablehq--block"></div>
+<div id="cell-3e5a84fd" class="observablehq observablehq--block"></div>
 <!-- Cards with big numbers -->
-<div class="grid grid-cols-3">
-  <div class="card">
-    <h2>Brook trout</h2>
-    <span class="big"><span id="cell-7ea546c8" class="observablehq--loading"></span></span>
+<div class="wrapper1">
+  <div class="card countsGraph">
+    <span id="cell-b18bf5a1" class="observablehq--loading"></span>
   </div>
+  <div class="summaryVertical">
+    <b style="font-size: 28px;">Counts</b>
     <div class="card">
-    <h2>Brown trout</h2>
-    <span class="big"><span id="cell-8c27bc7d" class="observablehq--loading"></span></span>
-  </div>
+      <h2>Brook trout</h2>
+      <span class="big"><span id="cell-7ea546c8" class="observablehq--loading"></span></span>
+    </div>
     <div class="card">
-    <h2>Atlantic salmon</h2>
-    <span class="big"><span id="cell-ddfc44b6" class="observablehq--loading"></span></span>
+      <h2>Brown trout</h2>
+      <span class="big"><span id="cell-8c27bc7d" class="observablehq--loading"></span></span>
+    </div>
+    <div class="card">
+      <h2>Atlantic salmon</h2>
+      <span class="big"><span id="cell-ddfc44b6" class="observablehq--loading"></span></span>
+    </div>
+    <hr>
+    <div class="card">
+      <h2>Shocking</h2>
+      <span class="big"><span id="cell-e6b6ef62" class="observablehq--loading"></span></span>
+    </div>
+      <div class="card">
+      <h2>Stationary antenna</h2>
+      <span class="big"><span id="cell-f1742969" class="observablehq--loading"></span></span>
+    </div>
+      <div class="card">
+      <h2>Portable antenna</h2>
+      <span class="big"><span id="cell-97b829e0" class="observablehq--loading"></span></span>
+    </div>
   </div>
 </div>
-<hr>
-<div class="grid grid-cols-3">
-  <div class="card">
-    <h2>Shocking</h2>
-    <span class="big"><span id="cell-e6b6ef62" class="observablehq--loading"></span></span>
-  </div>
-    <div class="card">
-    <h2>Stationary antenna</h2>
-    <span class="big"><span id="cell-f1742969" class="observablehq--loading"></span></span>
-  </div>
-    <div class="card">
-    <h2>Portable antenna</h2>
-    <span class="big"><span id="cell-97b829e0" class="observablehq--loading"></span></span>
-  </div>
-</div>
-<hr>
-<div id="cell-f4fe9542" class="observablehq observablehq--block"></div>
-<div class="card">
-  <span id="cell-b18bf5a1" class="observablehq--loading"></span>
-</div>
-<hr>
 <div class="small note">
-  Survey type "portableAntenna" is missing `riverMeter`, so those data don't get y-axis value on the plot currently. Need to add `rvierMeter` at the WBBook stage.
+  Survey type "portableAntenna" is missing `riverMeter`, so those data don't get y-axis value on the plot currently. Need to add `riverMeter` at the WBBook stage.
 </div>
-<div id="cell-f4b3f7e4" class="observablehq observablehq--block"></div>
-<hr>
-<div id="cell-6125f5bd" class="observablehq observablehq--block"></div>
-<h2 id="filter-the-dataset" tabindex="-1"><a class="observablehq-header-anchor" href="#filter-the-dataset">Filter the dataset</a></h2>
-<p>Select a cohort. Other variables are all selected by default.</p>
-<div class="grid grid-cols-4"> 
-  <div style="display: flex; flex-direction: column; align-items: flex-start;">
-    <span id="cell-eaa13441" class="observablehq--loading"></span>
+<div id="cell-3a531ef8" class="observablehq observablehq--block"></div>
+<div id="cell-97fee6d5" class="observablehq observablehq--block"></div>
+<div class="wrapper2">
+  <div class="card selectors">
+    <h1 style="margin-bottom: 20px"><strong>Filter data</strong></h1>
+    Select one or more cohorts. All other variables are selected by default.
+    <div style="margin-top: 20px">
+      <h2>1) Select cohorts:</h2>
+      <span id="cell-eaa13441" class="observablehq--loading"></span>
+    </div>
+    <div style="margin-top: 20px">
+      <h2>Select species:</h2>
+      <span id="cell-0ae89b96" class="observablehq--loading"></span>
+    </div>
+    <div style="margin-top: 20px">
+      <h2>Select rivers:</h2>
+      <span id="cell-6af07bbb" class="observablehq--loading"></span>
+    </div>
+    <div style="margin-top: 20px">
+      <h2>Select survey:</h2>
+      <span id="cell-58af2a53" class="observablehq--loading"></span>
+    </div>
+    <hr>
+    <span id="cell-58b998ff" class="observablehq--loading"></span>
+    <span id="cell-f8485b9b" class="observablehq--loading"></span>
+    <span id="cell-3878e53a" class="observablehq--loading"></span>
+    <span id="cell-813a093a" class="observablehq--loading"></span>
+    <hr>
+    <span id="cell-00a3f06d" class="observablehq--loading"></span>
   </div>
-  <div style="display: flex; flex-direction: column; align-items: flex-start;">
-    <span id="cell-0ae89b96" class="observablehq--loading"></span>
-  </div>
-  <div style="display: flex; flex-direction: column; align-items: flex-start;">
-    <span id="cell-6af07bbb" class="observablehq--loading"></span>
-  </div>
-  <div style="display: flex; flex-direction: column; align-items: flex-start;">
-    <span id="cell-58af2a53" class="observablehq--loading"></span>
+  <div class="card rasterGraph">
+    <div style="display: flex; flex-direction: row; align-items: flex-end; justify-content: flex-end;">
+      <span id="cell-83128f99" class="observablehq--loading"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="cell-fa587992" class="observablehq--loading"></span>
+    </div>
+    <div>
+      <span id="cell-3f2a2cbc" class="observablehq--loading"></span>
+    </div>
   </div>
 </div>
 <div id="cell-ccf0aaae" class="observablehq observablehq--block"></div>
 <div id="cell-dc996a2a" class="observablehq observablehq--block"></div>
 <hr>
-<div id="cell-ceb0ed69" class="observablehq observablehq--block"></div>
-<div class="grid grid-cols-3">
-  <div style="display: flex; flex-direction: column; align-items: flex-start;">
-    <span id="cell-58b998ff" class="observablehq--loading"></span>
-  </div>
-  <div style="display: flex; flex-direction: column; align-items: flex-start;">
-    <span id="cell-f8485b9b" class="observablehq--loading"></span>
-  </div>
-</div>
-<div class="grid grid-cols-3">
-  <div style="display: flex; flex-direction: column; align-items: flex-start;">
-    <span id="cell-3878e53a" class="observablehq--loading"></span>
-  </div>
-  <div style="display: flex; flex-direction: column; align-items: flex-start;">
-    <span id="cell-813a093a" class="observablehq--loading"></span>
-  </div>
-</div>
+<div id="cell-2ee2a303" class="observablehq observablehq--block"></div>
 <p>Number of rows in filtered dataset: <span id="cell-61648a6d" class="observablehq--loading"></span></p>
 <div id="cell-39b09ccd" class="observablehq observablehq--block observablehq--loading"></div>
 <hr>
-<div id="cell-45b4e53d" class="observablehq observablehq--block"></div>
-<p>In the chart below, sybmol colors are individuals (blue is untagged), size of the symbol is proportional to fish length and the symbol represents survey type. The chart is facetted by river and cohort.</p>
-<div class="card">
-  <div style="display: flex; flex-direction: column; align-items: flex-end;"><span id="cell-83128f99" class="observablehq--loading"></span></div>
-  <div> </div>
-  <span id="cell-c8c06364" class="observablehq--loading"></span>
-</div>
+<p>In the chart above, symbol colors are individuals (blue is untagged), size of the symbol is proportional to fish length and the symbol represents survey type. The chart is facetted by river and cohort.<br>
+Mouse over the line to see the individual ID.</p>
 <p>ToDo: fix the scale for r, so r doesn't change as observedLength is filtered</p>
 </main>
 <footer id="observablehq-footer">
-<nav><a rel="prev" href="./sizeTrajectories.html"><span>Size trajectories</span></a><a rel="next" href="./overviewParquet.html"><span>Overview - parquet sql</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-10-03T16:11:14">Oct 3, 2024</a>.</div>
+<nav><a rel="prev" href="./"><span>Pit Antenna Data Explorer</span></a><a rel="next" href="./sizeTrajectories.html"><span>Size trajectories</span></a></nav>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-10-03T16:36:07">Oct 3, 2024</a>.</div>
 </footer>
 </div>

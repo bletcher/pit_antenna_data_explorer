@@ -16,21 +16,25 @@ const cdwb = [...cdwbIn];
 
 cdwb.forEach(d => {
   const detectionDate = new Date(d.detectionDate); 
-  const lagDetectionDate = new Date(d.lagDetectionDate); 
+  const dateEmigrated = new Date(d.dateEmigrated); 
   d.detectionDate = detectionDate;
-  d.lagDetectionDate = lagDetectionDate;
+  d.dateEmigrated = dateEmigrated;
   d.title = d.tag
 });
 ```
 
 ```js
-import {plotSizeTrajectories} from "./components/sizeTrajectoriesGraphs.js";
+import {plotOverTime} from "./components/overTimeGraphs.js";
 //import {interval} from 'https://observablehq.com/@mootari/range-slider';
 ```
 
 ```js
+const variables = ["observedLength", "observedWeight", "sectionN", "riverMeter"];
+const selectVariable = (Inputs.select(variablesMap, {value: "observedLength", multiple: false, width: 80}));
+const selectedVariable = Generators.input(selectVariable);
+
 const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort().filter(d => isFinite(d));
-const selectCohortsOV = (Inputs.select(cohorts, {value: 2005, multiple: 8, width: 90}));
+const selectCohortsOV = (Inputs.select(cohorts, {value: 2005, multiple: 4, width: 90}));
 const selectedCohorts = Generators.input(selectCohortsOV);
 
 const species = [...new Set(cdwb.map(d => d.species))].sort();
@@ -41,9 +45,9 @@ const rivers = [...new Set(cdwb.map(d => d.riverOrdered))].sort();
 const selectRiversOV = (Inputs.select(riversMap, {value: rivers, multiple: true, width: 120}));
 const selectedRivers = Generators.input(selectRiversOV);
 
-//const surveys = [...new Set(cdwb.map(d => d.survey))];
-//const selectSurveysOV = (Inputs.select(surveysMap, {value: surveys, multiple: true, width: 160}));
-//const selectedSurveys = Generators.input(selectSurveysOV);
+const surveys = [...new Set(cdwb.map(d => d.survey))];
+const selectSurveysOV = (Inputs.select(surveysMap, {value: surveys, multiple: true, width: 160}));
+const selectedSurveys = Generators.input(selectSurveysOV);
 
 const radioIncludeUntagged = (Inputs.radio([true, false], {value: true, label: "Include untagged fish?"}));
 const selectedIncludeUntagged = Generators.input(radioIncludeUntagged);
@@ -56,6 +60,14 @@ const selectedToolTip = Generators.input(selectToolTip);
 ```
 
 ```js
+
+const variablesMap = new Map([
+  ["Fish length", "observedLength"],
+  ["Fish Mass", "observedWeight"],
+  ["River meter", "riverMeter"],
+  ["Section Number", "sectionN"]
+]);
+
 const speciesMap = new Map([
   ["Brook trout", "bkt"],
   ["Brown trout", "bnt"],
@@ -78,6 +90,11 @@ const surveysMap = new Map([
 
 <div class="wrapper2">
   <div class="card selectors">
+    <h1 style="margin-bottom: 20px"><strong>Select variable</strong></h1>
+      <div style="margin-top: 10px; margin-bottom: 0px">
+        ${view(selectVariable)}
+      </div>
+      <hr>
     <h1 style="margin-bottom: 20px"><strong>Filter data</strong></h1>
     Select one or more cohorts. All other variables are selected by default.
     <div style="margin-top: 20px">
@@ -92,6 +109,10 @@ const surveysMap = new Map([
       <h2>Select rivers:</h2>
       ${selectRiversOV}
     </div>
+    <div style="margin-top: 20px">
+      <h2>Select survey type:</h2>
+      ${selectSurveysOV}
+    </div>
     <hr>
     ${rangeMinLength}
     ${rangeMaxLength}
@@ -105,10 +126,13 @@ const surveysMap = new Map([
       ${rangeHeight}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${selectToolTip}
     </div>
     <div>
-      ${plotSizeTrajectories(
+      ${plotOverTime(
         cdwbFiltered,
+        selectedVariable,
+        selectedSurveys,
         selectedRangeHeight,
         selectedToolTip,
+        riversMap,
         {width}
       )}
     </div>
@@ -127,6 +151,7 @@ const cdwbFiltered0 = cdwb.filter(
 ```
 
 ```js
+/*
 const cdwbFiltered = cdwbFiltered0.filter(d => {
   return (
     d.riverMeter > 4000 &&
@@ -139,6 +164,33 @@ const cdwbFiltered = cdwbFiltered0.filter(d => {
     d.nPerInd <= selectedRangeMaxN
   );
 });
+*/
+const cdwbFiltered = cdwbFiltered0.filter(
+  d => {
+    if(d.survey === "shock") {
+      return d.riverMeter > 4000 && 
+        selectedSpecies.includes(d.species) &&
+        selectedCohorts.includes(d.cohort) &&
+        selectedRivers.includes(d.riverOrdered) &&
+        selectedSurveys.includes(d.survey) &&
+        d.observedLength >= selectedRangeMinLength &&
+        d.observedLength <= selectedRangeMaxLength &&
+        d.nPerInd >= selectedRangeMinN &&
+        d.nPerInd <= selectedRangeMaxN;
+    } else if(d.survey === "stationaryAntenna") {
+      return d.riverMeter > 0 && 
+        selectedSpecies.includes(d.species) &&
+        selectedCohorts.includes(d.cohort) &&
+        selectedRivers.includes(d.riverOrdered) &&
+        selectedSurveys.includes(d.survey);
+    } else if(d.survey === "portableAntenna") {
+       return selectedSpecies.includes(d.species) && // need to add riverMeter to survey==portableAntenna
+        selectedCohorts.includes(d.cohort) &&
+        selectedRivers.includes(d.riverOrdered) &&
+        selectedSurveys.includes(d.survey);
+    }
+  }
+)
 ```
 
 ---

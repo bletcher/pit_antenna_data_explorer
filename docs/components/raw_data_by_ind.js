@@ -8,19 +8,20 @@ export function tagsOverTime(data, {width}) {
   //x: { round: true, nice: d3.utcMonth },
     marks: [
       Plot.dot(data, {
-        x: "newDate",
+        x: "detectionDate",
         y: "riverMeter",
         stroke: "tag",
         symbol: "survey",
         fx: "riverOrdered"
       }),
       Plot.line(data, {
-        x: "newDate",
+        x: "detectionDate",
         y: "riverMeter",
         stroke: "tag",
         fx: "riverOrdered"
       }),
-      Plot.axisX({ ticks: "3 months" })
+      Plot.axisX({ ticks: "3 months", fontSize: "12px" }),
+      Plot.axisY({ fontSize: "12px" })
     ],
     // Include a legend for the color channel
     color: {
@@ -38,13 +39,14 @@ export function tagsOverTimeRiver(data, {width}) {
     width,
     marks: [
       Plot.dot(data, {
-        x: "newDate",
+        x: "detectionDate",
         y: "riverMeter",
         stroke: "tag",
         symbol: "riverOrdered"
       }),
-      Plot.line(data, { x: "newDate", y: "riverMeter", stroke: "tag" }),
-      Plot.axisX({ ticks: "3 months" })
+      Plot.line(data, { x: "detectionDate", y: "riverMeter", stroke: "tag" }),
+      Plot.axisX({ ticks: "3 months", fontSize: "12px" }),
+      Plot.axisY({ fontSize: "12px" })
     ],
     // Include a legend for the color channel
     color: {

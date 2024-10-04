@@ -1,10 +1,9 @@
 ---
 theme: dashboard
 title: Raw data by individual
-toc: true
+toc: false
+style: gridCustom.css
 ---
-
-# Raw data exploration by individual fish  
 
 ```js
 //const cdwb = FileAttachment("data/all_for_obs.csv").csv({typed: true});
@@ -12,84 +11,111 @@ const cdwb = FileAttachment("data/cdwb.json").json();
 ```
 
 ```js
-import {tagsOverTime} from "./components/raw_data_by_ind.js";
-import {tagsOverTimeRiver} from "./components/raw_data_by_ind.js";
-//import * as TMP from "./components/raw_data_by_ind.js";
+import {tagsOverTime, tagsOverTimeRiver} from "./components/raw_data_by_ind.js";
 ```
 
-## Subset the dataset
+```js
+cdwb.forEach(d => {
+  const detectionDate = new Date(d.detectionDate); 
+  const dateEmigrated = new Date(d.dateEmigrated); 
+  d.detectionDate = detectionDate;
+  d.dateEmigrated = dateEmigrated;
+  d.title = d.tag
+});
+```
 
 ```js
 const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort();
-```
+const selectCohorts = (Inputs.select(cohorts, {value: 2005, multiple: 8, label: "Select cohorts:"}));
+const selectedCohorts = Generators.input(selectCohorts);
 
-```js
-const selectCohort = view(Inputs.select(cohorts, {value: cohorts, multiple: true, label: "Select cohorts"}));
-```
-
-```js
 const species = [...new Set(cdwb.map(d => d.species))].sort();
+const selectSpecies = (Inputs.select(species, {value: species, multiple: true, label: "Select species:"}));
+const selectedSpecies = Generators.input(selectSpecies);
 ```
 
 ```js
-const selectSpecies = view(Inputs.select(species, {value: species, multiple: true, label: "Select species"}));
+/*
+const tagCounts = cdwb.reduce((acc, d) => {
+  acc[d.tag] = (acc[d.tag] || 0) + 1;
+  return acc;
+}, {});
+const filteredTagsByCount = Object.keys(tagCounts).filter(tag => tagCounts[tag] > 2); */
 ```
 
-## Select tags from subset
-
 ```js
-const tags = tidy(
-  cdwb,
-  filter((d) => selectSpecies.includes(d.species)),
-  filter((d) => selectCohort.includes(d.cohort)),
-  groupBy("tag", [summarize({ n: n() })]),
-  arrange([desc("n")]),
-  filter((d) => d.tag != "NA"),
-  filter((d) => d.n > 2)
+const cdwbFiltered = cdwb.filter(d => 
+  selectedSpecies.includes(d.species) && 
+  selectedCohorts.includes(d.cohort) 
 );
 ```
 
 ```js
-const selectTag = view(
-  Inputs.select(
-    tags.map((d) => d.tag), 
-      {
-        multiple: true, 
-        label: "Select tags"
-        //format: (d => `${d[,0]} n=${d[,1]}`)
-      }
-    )
-  );
+ //searchTags 
+
+//cdwbFilteredTag
+//tagCounts
+//tags//ToPlot
 ```
 
 ```js
-display(selectTag)
+const tagCountsFiltered = cdwbFiltered.reduce((acc, d) => {
+  acc[d.tag] = (acc[d.tag] || 0) + 1;
+  return acc;
+}, {});
+const sortedTags = Object.entries(tagCountsFiltered)
+  .sort((a, b) => b[1] - a[1])
+  .map(entry => entry[0]); 
+
+//const searchTags = Inputs.search(sortedTags, {placeholder: "Type to filter tags"});
+//const searchedTags = Generators.input(searchTags);
+
+const selectTags = (Inputs.select(sortedTags, {
+  //value: searchedTags, 
+  multiple: 8, label: "Select tags:"}));
+const selectedTags = Generators.input(selectTags);
 ```
 
 ```js
-const tagsToPlot = tidy(
-  cdwb,
-  mutate({
-    newDate: (d) => new Date(d.detectionDate)
-  })
+const cdwbFilteredTag = cdwb.filter(d => 
+  selectedTags.includes(d.tag)
 );
 ```
-selectTag length: ${tagsToPlot.filter((d) => selectTag.includes(d.tag)).length}  
 
-<div class="grid grid-cols-2">
-  <div class="card">
-    ${resize((width) => tagsOverTime(
-      tagsToPlot.filter((d) => selectTag.includes(d.tag)), 
-      {width})
-      )}
+selectTags length: ${cdwbFilteredTag.length}  
+
+<div class="wrapper2">
+  <div class="card selectors">
+    <div style="margin-top: 10px; margin-bottom: 0px">
+      ${selectCohorts}
+    </div>
+    <div style="margin-top: 10px; margin-bottom: 0px">
+      ${selectSpecies}
+    </div>
+    <hr>
+    <div style="margin-top: 10px; margin-bottom: 0px">
+      ${selectTags}
+    </div>
   </div>
-    <div class="card">
-    ${resize((width) => tagsOverTimeRiver(
-      tagsToPlot.filter((d) => selectTag.includes(d.tag)), 
+  <hr>
+  <div class="card indGraph1">
+    <div style="margin-top: 10px; margin-bottom: 0px">
+    ${resize((width) => tagsOverTime(
+      cdwbFilteredTag,
       {width})
     )}
+    </div>
+  </div>
+  <div class="card indGraph2">
+    <div style="margin-top: 10px; margin-bottom: 0px">
+    ${resize((width) => tagsOverTimeRiver(
+      cdwbFilteredTag,
+      {width})
+    )}
+    </div>
   </div>
 </div>
+
 
 
 
