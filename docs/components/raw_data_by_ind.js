@@ -17,6 +17,7 @@ export function tagsOverTime(data, {width}) {
       Plot.line(data, {
         x: "detectionDate",
         y: "riverMeter",
+        tip: true,
         stroke: "tag",
         fx: "riverOrdered"
       }),
@@ -42,7 +43,8 @@ export function tagsOverTimeRiver(data, {width}) {
         x: "detectionDate",
         y: "riverMeter",
         stroke: "tag",
-        symbol: "riverOrdered"
+        symbol: "riverOrdered",
+        tip: true
       }),
       Plot.line(data, { x: "detectionDate", y: "riverMeter", stroke: "tag" }),
       Plot.axisX({ ticks: "3 months", fontSize: "12px" }),

@@ -12,7 +12,9 @@ export default {
        pages: [
          {name: "Overview", path: "/overview"},
          {name: "Variables over time", path: "/overTime"},
-         {name: "By individual", path: "rawDataByInd"}
+         {name: "By individual", path: "rawDataByInd"},
+         {name: "Antenna data", path: "antennaData"},
+         //{hr: true}
        ]
      },
      {
