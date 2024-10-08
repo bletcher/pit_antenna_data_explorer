@@ -6,6 +6,7 @@ import { timeFormat } from 'd3-time-format';
 
 
   export function plotOverTime(dataIn, variableIn, surveySet, rangeHeight, selectedToolTip, riversMap, {width}) {
+    
     const colorScale = Plot.scale({
       color: {
         type: "categorical",
