@@ -34,25 +34,25 @@ const selectVariable = (Inputs.select(variablesMap, {value: "observedLength", mu
 const selectedVariable = Generators.input(selectVariable);
 
 const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort().filter(d => isFinite(d));
-const selectCohortsOV = (Inputs.select(cohorts, {value: 2005, multiple: 4, width: 90}));
+const selectCohortsOV = (Inputs.select(cohorts, {value: 2005, multiple: 4, width: 20}));
 const selectedCohorts = Generators.input(selectCohortsOV);
 
 const species = [...new Set(cdwb.map(d => d.species))].sort();
-const selectSpeciesOV = (Inputs.select(speciesMap, {value: species, multiple: true, width: 80}));
+const selectSpeciesOV = (Inputs.select(speciesMap, {value: species, multiple: true, width: 70}));
 const selectedSpecies = Generators.input(selectSpeciesOV);
 
 const rivers = [...new Set(cdwb.map(d => d.riverOrdered))].sort();
-const selectRiversOV = (Inputs.select(riversMap, {value: rivers, multiple: true, width: 120}));
+const selectRiversOV = (Inputs.select(riversMap, {value: rivers, multiple: true, width: 70}));
 const selectedRivers = Generators.input(selectRiversOV);
 
 const surveys = [...new Set(cdwb.map(d => d.survey))];
-const selectSurveysOV = (Inputs.select(surveysMap, {value: surveys, multiple: true, width: 160}));
+const selectSurveysOV = (Inputs.select(surveysMap, {value: surveys, multiple: true, width: 70}));
 const selectedSurveys = Generators.input(selectSurveysOV);
 
 const radioIncludeUntagged = (Inputs.radio([true, false], {value: true, label: "Include untagged fish?"}));
 const selectedIncludeUntagged = Generators.input(radioIncludeUntagged);
 
-const rangeHeight = (Inputs.range([200, 2000], {step: 10, value: 950, label: 'Chart height'}));
+const rangeHeight = (Inputs.range([200, 2000], {step: 10, value: 950, label: 'Chart height', width: 160}));
 const selectedRangeHeight = Generators.input(rangeHeight);
 
 const selectToolTip = (Inputs.radio([true, false], {value: false, label: "Show tool tip?"}));
@@ -120,11 +120,11 @@ const surveysMap = new Map([
     ${rangeMaxN}
     <hr>
     ${radioIncludeUntagged}
+    <hr>
+    ${rangeHeight}
+    ${selectToolTip}
   </div>
   <div class="card rasterGraph">
-    <div style="display: flex; flex-direction: row; align-items: flex-end; justify-content: flex-end;">
-      ${rangeHeight}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${selectToolTip}
-    </div>
     <div>
       ${plotOverTime(
         cdwbFiltered,
@@ -198,14 +198,14 @@ const cdwbFiltered = cdwbFiltered0.filter(
 ```js
 //These need to be here to avoid circular dependencies
 const extentLength = (d3.extent(cdwbFiltered0.map(d => d.observedLength)))
-const rangeMinLength = (Inputs.range([extentLength[0], extentLength[1]], {step: 10, value: extentLength[0], label: 'Minimum fish length:'}));
+const rangeMinLength = (Inputs.range([extentLength[0], extentLength[1]], {step: 10, value: extentLength[0], label: 'Minimum fish length:', width: 150}));
 const selectedRangeMinLength = Generators.input(rangeMinLength);
-const rangeMaxLength = (Inputs.range([rangeMinLength, extentLength[1]], {step: 10, value: extentLength[1], label: 'Maximum fish length:'}));
+const rangeMaxLength = (Inputs.range([rangeMinLength, extentLength[1]], {step: 10, value: extentLength[1], label: 'Maximum fish length:', width: 150}));
 const selectedRangeMaxLength = Generators.input(rangeMaxLength);
 
-const rangeMinN = (Inputs.range([1, d3.max(cdwbFiltered0, d => d.nPerInd)], {step: 1, value: 1, label: 'Minimum num obs/fish:'}));
+const rangeMinN = (Inputs.range([1, d3.max(cdwbFiltered0, d => d.nPerInd)], {step: 1, value: 1, label: 'Minimum num obs/fish:', width: 150}));
 const selectedRangeMinN = Generators.input(rangeMinN);
-const rangeMaxN = (Inputs.range([rangeMinN, d3.max(cdwbFiltered0, d => d.nPerInd)], {step: 1, value: d3.max(cdwbFiltered0, d => d.nPerInd), label: 'Maximum num obs/fish:'}));
+const rangeMaxN = (Inputs.range([rangeMinN, d3.max(cdwbFiltered0, d => d.nPerInd)], {step: 1, value: d3.max(cdwbFiltered0, d => d.nPerInd), label: 'Maximum num obs/fish:', width: 150}));
 const selectedRangeMaxN = Generators.input(rangeMaxN);
 ```
 

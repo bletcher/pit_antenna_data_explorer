@@ -1,22 +1,3 @@
-{
-  "type": "module",
-  "private": true,
-  "scripts": {
-    "clean": "rimraf docs/.observablehq/cache",
-    "build": "rimraf dist && observable build",
-    "dev": "observable preview",
-    "deploy": "observable deploy",
-    "observable": "observable"
-  },
-  "dependencies": {
-    "@observablehq/framework": "latest",
-    "d3-dsv": "^3.0.1",
-    "d3-time-format": "^4.1.0"
-  },
-  "devDependencies": {
-    "rimraf": "^5.0.5"
-  },
-  "engines": {
-    "node": ">=18"
-  }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:39057ca14e1f4f7a63925024536b2cba15f061de9eb62987fa752ef90eab164a
+size 493
