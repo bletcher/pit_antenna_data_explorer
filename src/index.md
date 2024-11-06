@@ -17,10 +17,10 @@ toc: false
 .hero h1 {
   margin: 2rem 0;
   max-width: none;
-  font-size: 14vw;
-  font-weight: 900;
+  font-size: 12vw;
+  font-weight: 200;
   line-height: 1;
-  background: linear-gradient(30deg, var(--theme-foreground-focus), currentColor);
+  background: linear-gradient(10deg, #64823f , #005f40);/*var(--theme-foreground-focus) currentColor); */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -33,7 +33,7 @@ toc: false
   font-style: initial;
   font-weight: 500;
   line-height: 1.5;
-  color: var(--theme-foreground-muted);
+  color: var(--theme-foreground-muted); 
 }
 
 @media (min-width: 640px) {
@@ -49,7 +49,7 @@ toc: false
 </div>
 
 <div class="hero">
-  <h2>*Draft* document for exploring PIT tag data from the West Brook, Whateley, MA</h2>
+  <h2>*Draft* document for exploring PIT tag data from the West Brook, Whately, MA</h2>
 </div>
 
 

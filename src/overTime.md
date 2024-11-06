@@ -135,6 +135,8 @@ const surveysMap = new Map([
         riversMap,
         {width}
       )}
+      <hr>
+      Double-click on a point to copy to PIT tag # to the clipboard.
     </div>
   </div>
 </div>

@@ -61,8 +61,8 @@ import { timeFormat } from 'd3-time-format';
           fy: "cohort", fx: "riverOrdered",
           title: "tag"
         }),
-        Plot.axisX({fontSize: "14px"}),
-        Plot.axisY({fontSize: "12px"})
+        Plot.axisX({fontSize: "15px"}),
+        Plot.axisY({fontSize: "14px"})
       ]
     });
 
@@ -94,7 +94,27 @@ import { timeFormat } from 'd3-time-format';
       })
       .on("mouseout", function () {
           d3.select(plot).selectAll('path, circle').attr("stroke-width", 1).attr("opacity", 1);
-      });
+      })
+      .on("dblclick", function() {
+        // Get the text from the title element
+        const textToCopy = d3.select(this).select("title").text();
+    
+        // Create a temporary textarea element to hold the text
+        const tempTextArea = document.createElement("textarea");
+        tempTextArea.value = textToCopy;
+        document.body.appendChild(tempTextArea);
+    
+        // Select the text in the textarea and copy it to the clipboard
+        tempTextArea.select();
+        document.execCommand("copy");
+    
+        // Remove the temporary textarea element
+        document.body.removeChild(tempTextArea);
+    
+        // Optionally, you can provide feedback to the user
+        console.log("Text copied to clipboard:", textToCopy);
+    })
+      ;
 
     return plot;
   }

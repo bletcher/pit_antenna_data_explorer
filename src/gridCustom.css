@@ -4,7 +4,7 @@
 @import url("observablehq:theme-alt.css");
 
 :root {
-  --theme-foreground-focus: rgb(17, 75, 17);
+  --theme-foreground-focus: #005f40;
 }
 
 .wrapper1 {
@@ -31,9 +31,14 @@
 }
 .antSelectors {
   grid-column: 1 / 1;
-  grid-row: 1 / 5;
+  grid-row: 1 / 6;
 }
 
+.speciesSelector {
+  grid-column: 1 / 1;
+  grid-row: 5 / 6;
+  margin-top: 10px;
+}
 
 .wrapper2 {
   display: grid;

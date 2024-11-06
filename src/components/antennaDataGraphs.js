@@ -7,7 +7,9 @@ export function antennaData(dataIn, intervalIn, selectedFillVarIn, {width}) {
   const colorScale = Plot.scale({
     color: {
       type: "categorical",
-      domain: [...new Set(dataIn.map(d => d[selectedFillVarIn]))].sort(),
+      domain: selectedFillVarIn === 'hour' 
+        ? [...new Set(dataIn.map(d => d[selectedFillVarIn]))].sort((a, b) => Number(a) - Number(b))
+        : [...new Set(dataIn.map(d => d[selectedFillVarIn]))].sort(),
       unknown: "var(--theme-foreground-muted)"
     }
   });

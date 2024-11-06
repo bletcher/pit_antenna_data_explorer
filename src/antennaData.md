@@ -19,10 +19,10 @@ import {speciesMap, riversMap, variablesMapAnt, variablesMapAntNoNull} from "./c
 const cdwbIn = FileAttachment("data/cdwb.json").json(); // this is a lot faster than the parquet file
 
 // file created from `C:\Users\bletcher\OneDrive - DOI\PITTAGMAIN\West Brook data\Antenna data\Copy of sites.xlsx`, saved as a csv and copied to the data folder
-const sitesIn = FileAttachment("data/Copy of Sites_all_UTM.csv").csv({typed: true});
+//const sitesIn = FileAttachment("data/Copy of Sites_all_UTM.csv").csv({typed: true});
 
 //Copied from C:\Users\bletcher\OneDrive - DOI\PITTAGMAIN\West Brook data\
-const coordsIn = FileAttachment("data/WBCoordsForD3JS.csv").csv({typed: true});
+const coordsIn = FileAttachment("data/WBCoordsForD3JS_NHDHRsnapped.csv").csv({typed: true});
 
 //const cdwbIn = FileAttachment("data/parquet/part-0.parquet").parquet();
 ```
@@ -30,7 +30,9 @@ const coordsIn = FileAttachment("data/WBCoordsForD3JS.csv").csv({typed: true});
 ```js
 const cdwb = [...cdwbIn];
 
-const formatTime = d3.timeFormat("%j");
+const formatTimeJ = d3.timeFormat("%j");
+const formatTimeHour = d3.timeFormat("%H");
+const formatTimeMinute = d3.timeFormat("%M");
 //formatTime(new Date()); // "May 31, 2023"
 
 cdwb.forEach(d => {
@@ -38,40 +40,52 @@ cdwb.forEach(d => {
   const dateEmigrated = new Date(d.dateEmigrated); 
   d.detectionDate = detectionDate;
   d.dateEmigrated = dateEmigrated;
-  d.j = Number(formatTime(d.detectionDate));
+  d.j = Number(formatTimeJ(d.detectionDate));
+  d.hour = Number(formatTimeHour(d.detectionDate));
+  d.minute = Number(formatTimeMinute(d.detectionDate));
   //d.title = d.tag
 });
 
-const cdwbAntenna = cdwb.filter(d => d.survey === "stationaryAntenna");
-```
-
-
-```js
-//years[7]
-//cdwbAntenna
+const cdwbAntenna0 = cdwb.filter(d => d.survey === "stationaryAntenna");
 ```
 
 ```js
-const years = [...new Set(cdwbAntenna.map(d => d.year))].sort().filter(d => isFinite(d));
-const selectYears = (Inputs.select(years, {value: years, multiple: true, width: 50}));
+const cdwbAntenna = selectedGrouping === "None" ? cdwbAntenna0
+  : selectedGrouping === "Day" ? d3.groups(cdwbAntenna0, d => `${d.tag}_${d.year}_${d.j}_${d.survey}_${d.riverMeter}_${d.riverOrdered}`).map(([key, group]) => group[0])
+  : selectedGrouping === "Hour" ? d3.groups(cdwbAntenna0, d => `${d.tag}_${d.year}_${d.j}_${d.hour}_${d.survey}_${d.riverMeter}_${d.riverOrdered}`).map(([key, group]) => group[0])
+  : selectedGrouping === "Minute" ? d3.groups(cdwbAntenna0, d => `${d.tag}_${d.year}_${d.j}_${d.hour}_${d.minute}_${d.survey}_${d.riverMeter}_${d.riverOrdered}`).map(([key, group]) => group[0])
+  : cdwbAntenna0
+```
+
+```js
+const species = [...new Set(cdwbAntenna.map(d => d.species))].sort();
+const filteredSpeciesMap = new Map(
+  Array.from(speciesMap).filter(([key, value]) => species.includes(value))
+);
+const selectSpecies = (Inputs.select(filteredSpeciesMap, {value: species, multiple: true, width: 10}));
+const selectedSpecies = Generators.input(selectSpecies);
+```
+
+```js
+const cdwbAntennaSpecies = cdwbAntenna.filter(
+  d => selectedSpecies.includes(d.species)        
+)
+```
+
+```js
+const years = [...new Set(cdwbAntennaSpecies.map(d => d.year))].sort().filter(d => isFinite(d));
+const selectYears = (Inputs.select(years, {value: years, multiple: 6, width: 10}));
 const selectedYears = Generators.input(selectYears);
 ```
 
 ```js
-const cdwbAntennaYears = cdwbAntenna.filter(
+const cdwbAntennaSpeciesYears = cdwbAntennaSpecies.filter(
   d => selectedYears.includes(d.year)        
 );
 ```
 
-Number of observations:  
-All: **${cdwbAntenna.length}**  
-Filter by years: **${cdwbAntennaYears.length}**  
-filter by rivers: **${cdwbAntennaYearsRiver.length}**  
-Filter by antenna: **${cdwbAntennaYearsRiverRiverMeters.length}**  
-
 ```js
-const rivers = [...new Set(cdwbAntennaYears.map(d => d.riverOrdered))].sort();
-//const selectRivers = (Inputs.select(riversMap.filter(d = > rivers.includes(d.riverOrdered)), {value: rivers, multiple: true, width: 10}));
+const rivers = [...new Set(cdwbAntennaSpeciesYears.map(d => d.riverOrdered))].sort();
 const filteredRiversMap = new Map(
   Array.from(riversMap).filter(([key, value]) => rivers.includes(value))
 );
@@ -79,34 +93,27 @@ const selectRivers = (Inputs.select(filteredRiversMap, {value: rivers, multiple:
 const selectedRivers = Generators.input(selectRivers);
 ```
 
-riversMap
 ```js
-filteredRiversMap
-//riversMap.filter(d => rivers.includes(d))
-```
-
-```js
-const cdwbAntennaYearsRiver = cdwbAntennaYears.filter(
+const cdwbAntennaSpeciesYearsRiver = cdwbAntennaSpeciesYears.filter(
   d => selectedRivers.includes(d.riverOrdered)        
 )
 ```
 
-
 ```js
-const riverMeters = [...new Set(cdwbAntennaYearsRiver.map(d => d.riverMeter))].sort();
-const selectRiverMeters = (Inputs.select(riverMeters, {value: riverMeters, multiple: true, width: 10}));
+const riverMeters = [...new Set(cdwbAntennaSpeciesYearsRiver.map(d => d.riverMeter))].sort();
+const selectRiverMeters = (Inputs.select(riverMeters, {value: riverMeters, multiple: 5, width: 10}));
 const selectedRiverMeters = Generators.input(selectRiverMeters);
 ```
 
 ```js
-const cdwbAntennaYearsRiverRiverMeters = cdwbAntennaYearsRiver.filter(
+const cdwbAntennaSpeciesYearsRiverRiverMeters = cdwbAntennaSpeciesYearsRiver.filter(
   d => selectedRiverMeters.includes(d.riverMeter)        
 )
 ```
 
 ```js
-const interval = d3.range(1, 31, 1);
-const selectInterval = (Inputs.select(interval, {value: 1, multiple: false, width: 10}));
+//const interval = d3.range(1, 31, 1);
+const selectInterval = (Inputs.range([1, 31], {value: 1, step: 1, width: 10}));
 const selectedInterval = Generators.input(selectInterval);
 
 //const fxVar = ["species", "riverOrdered", "riverMeter"];
@@ -120,25 +127,44 @@ const selectedFyVar = Generators.input(selectFyVar);
 //const fillVar = ["species", "riverOrdered", "riverMeter"];
 const selectFillVar = (Inputs.select(variablesMapAntNoNull, {value: "species", multiple: false, width: 10}));
 const selectedFillVar = Generators.input(selectFillVar);
+
+const selectGrouping = (Inputs.select(["None", "Day", "Hour", "Minute"], {value: "None", width: 5}));
+const selectedGrouping = Generators.input(selectGrouping);
 ```
 
 <div class="wrapper2">
   <div class="card antSelectors">
     <h1 style="margin-bottom: 20px"><strong>Filter data</strong></h1>
+      <div style="display: flex; align-items: center; gap: 15px">
+        Group individuals by? <span>${view(selectGrouping)}</span>
+      </div>
+      <hr>
+      <div style="margin-top: 0px">
+      <h2>Select species:</h2>
+      <div style="display: flex; align-items: center; gap: 15px">
+        ${view(selectSpecies)} <span>n = ${cdwbAntennaSpecies.length}</span>
+      </div>
+    </div>
     <div style="margin-top: 20px">
       <h2>Select year(s):</h2>
-      ${view(selectYears)}
+      <div style="display: flex; align-items: center; gap: 15px">
+        ${view(selectYears)} <span>n = ${cdwbAntennaSpeciesYears.length}</span>
+      </div>
     </div>
     <div style="margin-top: 20px">
       <h2>Select river(s):</h2>
-      ${view(selectRivers)}
+      <div style="display: flex; align-items: center; gap: 15px">
+        ${view(selectRivers)} <span>n = ${cdwbAntennaSpeciesYearsRiver.length}</span>
+      </div>
     </div>
     <div style="margin-top: 20px">
       <h2>Select antenna (river meter):</h2>
-      ${view(selectRiverMeters)}
+        <div style="display: flex; align-items: center; gap: 15px">
+        ${view(selectRiverMeters)} <span>n = ${cdwbAntennaSpeciesYearsRiverRiverMeters.length}</span>
+      </div>
     </div>
     <hr>
-    <div style="margin-top: 20px">
+    <div style="margin-top: 2px">
       <h2>Select plotting interval (days):</h2>
       ${view(selectInterval)}
     </div>
@@ -149,7 +175,7 @@ const selectedFillVar = Generators.input(selectFillVar);
   </div>
   <div class="card antGraph">
     ${antennaData(
-      cdwbAntennaYearsRiverRiverMeters,
+      cdwbAntennaSpeciesYearsRiverRiverMeters,
       selectedInterval,
       selectedFillVar,
       width
@@ -157,9 +183,9 @@ const selectedFillVar = Generators.input(selectFillVar);
   </div>
 </div>
 
-cdwbAntennaYearsRiverRiverMeters
+cdwbAntennaSpeciesYearsRiverRiverMeters
 ```js
-cdwbAntennaYearsRiverRiverMeters
+cdwbAntennaSpeciesYearsRiverRiverMeters
 ```
 
 ---
@@ -237,7 +263,6 @@ updateMarkerStyles(markers);
 
 
 
-
 ```js
 function convertUTMToLatLon(easting, northing, zone) {
     const utmProj = `+proj=utm +zone=${zone} +datum=WGS84 +units=m +no_defs`;
@@ -257,6 +282,7 @@ function getUTMZone(lon) {
 ```
 
 ```js
+//sitesIn
 /*
 const utmZone = getUTMZone(-72.5);
 
@@ -270,3 +296,5 @@ sitesIn.forEach(d => {
 //sitesIn
 */
 ```
+
+
