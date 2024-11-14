@@ -111,3 +111,21 @@ export function updateMarkerStyles(markers) {
   //console.log("updateMarkerStyle", markersSelected.value, markers.filter(d => d.selected).map(d => d.siteID))
   return(markers);
 };
+
+export function addMapClickListener(map1) {
+  map1.on('dblclick', function(e) {
+    // Prevent the default double-click zoom behavior
+    L.DomEvent.stopPropagation(e);
+    L.DomEvent.preventDefault(e);
+    
+    const lat = e.latlng.lat.toFixed(10);
+    const lng = e.latlng.lng.toFixed(10);
+    L.popup()
+      .setLatLng(e.latlng)
+      .setContent(`Lat: ${lat}<br>Lon: ${lng}`)
+      .openOn(map1);
+  });
+  
+  // Disable double click zoom entirely
+  map1.doubleClickZoom.disable();
+}

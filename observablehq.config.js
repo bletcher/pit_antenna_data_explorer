@@ -14,6 +14,7 @@ export default {
          {name: "Variables over time", path: "/overTime"},
          {name: "By individual", path: "rawDataByInd"},
          {name: "Antenna data", path: "antennaData"},
+         
          //{hr: true}
        ]
      },

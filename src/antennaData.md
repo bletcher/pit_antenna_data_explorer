@@ -5,7 +5,7 @@ style: gridCustom.css
 ---
 
 ```js
-import proj4 from 'proj4';
+//import proj4 from 'proj4'; // for UTM conversion
 ```
 
 ```js
@@ -20,7 +20,9 @@ const cdwbIn = FileAttachment("data/cdwb.json").json(); // this is a lot faster 
 
 // file created from `C:\Users\bletcher\OneDrive - DOI\PITTAGMAIN\West Brook data\Antenna data\Copy of sites.xlsx`, saved as a csv and copied to the data folder
 //const sitesIn = FileAttachment("data/Copy of Sites_all_UTM.csv").csv({typed: true});
+```
 
+```js
 //Copied from C:\Users\bletcher\OneDrive - DOI\PITTAGMAIN\West Brook data\
 const coordsIn = FileAttachment("data/WBCoordsForD3JS_NHDHRsnapped.csv").csv({typed: true});
 
@@ -100,14 +102,14 @@ const cdwbAntennaSpeciesYearsRiver = cdwbAntennaSpeciesYears.filter(
 ```
 
 ```js
-const riverMeters = [...new Set(cdwbAntennaSpeciesYearsRiver.map(d => d.riverMeter))].sort();
-const selectRiverMeters = (Inputs.select(riverMeters, {value: riverMeters, multiple: 5, width: 10}));
+const riverMeters = [...new Set(cdwbAntennaSpeciesYearsRiver.map(d => `${d.riverMeter}_${d.riverOrdered}`))].sort();
+const selectRiverMeters = (Inputs.select(riverMeters, {value: riverMeters, multiple: 5, width: 30}));
 const selectedRiverMeters = Generators.input(selectRiverMeters);
 ```
 
 ```js
 const cdwbAntennaSpeciesYearsRiverRiverMeters = cdwbAntennaSpeciesYearsRiver.filter(
-  d => selectedRiverMeters.includes(d.riverMeter)        
+  d => selectedRiverMeters.includes(`${d.riverMeter}_${d.riverOrdered}`)        
 )
 ```
 
@@ -188,6 +190,12 @@ cdwbAntennaSpeciesYearsRiverRiverMeters
 cdwbAntennaSpeciesYearsRiverRiverMeters
 ```
 
+dateRange
+```js
+const dateRange = d3.extent(cdwbAntennaSpeciesYearsRiverRiverMeters, d => d.detectionDate);
+display(dateRange)
+```
+
 ---
 
 ```js
@@ -205,7 +213,7 @@ coordsIn
 /////////
 // Map //
 /////////
-import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles } from "./components/antennaDataFunctions.js";
+import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, addMapClickListener } from "./components/antennaDataFunctions.js";
 ```
 
 ```js
@@ -253,6 +261,7 @@ let markers = addMarkers(coordsIn, map1);
 let markersSelected = Mutable([initialSite]);
 addClickListenersToMarkers(markers, markersSelected);
 updateMarkerStyles(markers);
+addMapClickListener(map1);
 ```
 
 
@@ -264,12 +273,13 @@ updateMarkerStyles(markers);
 
 
 ```js
+/*
 function convertUTMToLatLon(easting, northing, zone) {
     const utmProj = `+proj=utm +zone=${zone} +datum=WGS84 +units=m +no_defs`;
     const latLonProj = '+proj=longlat +datum=WGS84 +no_defs';
     return proj4(utmProj, latLonProj, [easting, northing]);
 }
-
+*/
 
 /*
  * Function to calculate UTM zone from longitude

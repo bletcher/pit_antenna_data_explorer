@@ -3,17 +3,18 @@ library(jsonlite)
 library(tidyverse)
 
 # loads 'all'
-load("./docs/data/cdWB_all.RData")
+load("./src/data/cdWB_all.RData")
 
 # create smaller dataset for the app
 d <- all |>
   dplyr::select(
     species, tag, detectionDate,
-    #lagDetectionDate, 
+    #lagDetectionDate,
     year, riverOrdered,
-    observedLength, observedWeight, survey, cohort, sectionN, riverMeter, 
-    #aliveOrDead, 
-    nPerInd, readerId, 
+    observedLength, observedWeight, survey, cohort, sectionN, riverMeter,
+    #aliveOrDead,
+    nPerInd,
+    #readerId,
     relCF, dateEmigrated
   ) |>
   filter(species %in% c("bkt", "bnt", "ats")) |>
@@ -27,7 +28,12 @@ d <- all |>
   arrange(detectionDate) |>
   ungroup()
 
-# write_json(d, "./docs/data/all_for_obs.json") # this is 98 mB vs 60 for csv 
-#write.csv(d, "./docs/data/all_for_obs.csv")
-
-cat(toJSON(d))
+dOut <- toJSON(d,
+  pretty = TRUE,
+  auto_unbox = TRUE,
+  na = "null",
+  digits = NA,  # Preserve numeric precision
+  raw_json = FALSE,  # Ensure proper JSON encoding
+  force = TRUE
+)
+cat(dOut)

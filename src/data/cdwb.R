@@ -11,7 +11,7 @@ library(duckdb)
 library(tidyverse)
 
 # loads 'all'
-load("./docs/data/cdWB_all.RData")
+load("./src/data/cdWB_all.RData")
 
 # create smaller dataset for the app
 d <- all |>
