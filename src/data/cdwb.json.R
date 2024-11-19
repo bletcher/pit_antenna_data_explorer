@@ -36,4 +36,6 @@ dOut <- toJSON(d,
   raw_json = FALSE,  # Ensure proper JSON encoding
   force = TRUE
 )
+
+dOut0 <- toJSON(d) # this is the same size as the one above
 cat(dOut)

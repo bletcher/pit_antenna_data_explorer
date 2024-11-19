@@ -23,6 +23,12 @@ const cdwbIn = FileAttachment("data/cdwb.json").json(); // this is a lot faster 
 ```
 
 ```js
+//Copied from c:\Users\bletcher\OneDrive - DOI\projects\wbBook_quarto_targets\data\outForDownload\antenna
+// after adding lat and lon to the deploy file
+const deployIn = FileAttachment("data/deploy_with_lat_lon_added.csv").csv({typed: true});
+```
+
+```js
 //Copied from C:\Users\bletcher\OneDrive - DOI\PITTAGMAIN\West Brook data\
 const coordsIn = FileAttachment("data/WBCoordsForD3JS_NHDHRsnapped.csv").csv({typed: true});
 
@@ -190,10 +196,9 @@ cdwbAntennaSpeciesYearsRiverRiverMeters
 cdwbAntennaSpeciesYearsRiverRiverMeters
 ```
 
-dateRange
 ```js
 const dateRange = d3.extent(cdwbAntennaSpeciesYearsRiverRiverMeters, d => d.detectionDate);
-display(dateRange)
+//display(dateRange)
 ```
 
 ---
@@ -206,15 +211,73 @@ coordsIn.forEach(d => {
 ```
 
 ```js
-coordsIn
+//coordsIn
+```
+
+```js
+const deploy = deployIn.map(d => ({
+  ...d,
+  lat: d.lat === "NA" || d.lat === "" ? null : Number(d.lat),
+  lon: d.lon === "NA" || d.lon === "" ? null : Number(d.lon),
+  antenna_name: d.antenna_name || "Unknown"
+})).filter(d => d.lat != null && d.lon != null);
+
+```
+
+```js
+// Get date extent from deploy data
+const dateExtent = d3.extent([
+  ...deploy.map(d => new Date(d.deployed)),
+  ...deploy.map(d => new Date(d.removed))
+]);
+
+// Create array of all dates in range
+const dateRangeAntenna = d3.timeDay.range(dateExtent[0], dateExtent[1]);
+
+// Create date slider using the array of dates
+const selectAntennaDate = Inputs.range([0, dateRangeAntenna.length - 1], {
+  value: 0,
+  step: 1,
+  //format: index => d3.timeFormat("%Y-%m-%d")(dateRangeAntenna[index]),
+  //label: "Antenna date:",
+  width: 400,
+  display: false
+});
+
+// Get selected date from the array
+//const selectedAntennaDate = dateRangeAntenna[Generators.input(selectAntennaDate)];
+const selectedAntennaDate = Generators.input(selectAntennaDate);
+
+// Convert index to actual date
+//const selectedAntennaDateDate = dateRangeAntenna[selectedAntennaDate];
+```
+
+```js
+// Filter deploy data based on selected date
+const activeAntennas = deploy.filter(d => {
+  const deployedDate = new Date(d.deployed);
+  const removedDate = new Date(d.removed);
+  return selectedAntennaDateDate >= deployedDate && selectedAntennaDateDate <= removedDate;
+});
+//display(activeAntennas)
+```
+
+```js
+const selectedAntennaDateDate = dateRangeAntenna[selectedAntennaDate];
+//display(selectedAntennaDateDate)
 ```
 
 ```js
 /////////
 // Map //
 /////////
-import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, addMapClickListener } from "./components/antennaDataFunctions.js";
+import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, addMapClickListener, addAntennas } from "./components/antennaDataFunctions.js";
 ```
+
+<div style="margin-top: 20px">
+  <h3>Select date for antenna filter:</h3>
+  ${d3.timeFormat("%Y-%m-%d")(selectedAntennaDateDate)} ${view(selectAntennaDate)}
+</div>
 
 ```js
 /////////
@@ -240,7 +303,7 @@ import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, ad
   .addTo(map1);
 
   L.control.layers(baseMap).addTo(map1);
-  baseMap.USGS_hydro.addTo(map1);
+  baseMap.USGS_hydro_detail.addTo(map1);
 
   // Store the initial map view
   const initialView1 = map1.getBounds();
@@ -249,6 +312,7 @@ import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, ad
   window.addEventListener('resize', function() {
     map1.fitBounds(initialView1);
   });
+
 ```
 
 ```js
@@ -264,6 +328,20 @@ updateMarkerStyles(markers);
 addMapClickListener(map1);
 ```
 
+```js
+// Clear any existing antenna layers and add new ones
+map1.eachLayer(layer => {
+  if (layer instanceof L.LayerGroup) {
+    layer.clearLayers();
+  }
+});
+
+addAntennas(activeAntennas, map1);
+```
+
+```js
+activeAntennas
+```
 
 
 

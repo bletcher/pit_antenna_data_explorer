@@ -112,3 +112,7 @@
   grid-column: 9 / 10;
 }
 
+.antenna-marker {
+  border: none;
+  background: none;
+}
