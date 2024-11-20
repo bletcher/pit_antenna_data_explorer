@@ -101,22 +101,27 @@ export function addAntennas(activeAntennas, map1, antennasSelected) {
 
   activeAntennas.forEach(d => {
     const baseColor = getColorByRiverAbbr(d.riverAbbr);
-    const darkerColor = d3.color(baseColor).darker(1.75); 
+    const isSelected = antennasSelected.value.includes(d.antenna_name);
+    const markerColor = isSelected ? 
+      d3.color(baseColor).brighter(1) : 
+      d3.color(baseColor).darker(1.75);
+    
+    const markerSize = isSelected ? 35 : 25;
 
     const antennaIcon = L.divIcon({
       className: 'antenna-marker',
       html: `<div style="
-        width: 4px; 
-        height: 25px; 
-        background-color: ${darkerColor};
+        width: ${isSelected ? '6px' : '4px'}; 
+        height: ${markerSize}px; 
+        background-color: ${markerColor};
         transform: rotate(${d.angle || 0}deg);
         transform-origin: center;
         box-shadow: 0 0 4px #000;
         border: 1px solid white;
         opacity: 0.9;
       "></div>`,
-      iconSize: [6, 25],
-      iconAnchor: [3, 12]
+      iconSize: [isSelected ? 8 : 6, markerSize],
+      iconAnchor: [isSelected ? 4 : 3, markerSize/2]
     });
 
     const marker = L.marker([d.lat, d.lon], {
@@ -124,8 +129,8 @@ export function addAntennas(activeAntennas, map1, antennasSelected) {
       zIndexOffset: 1000
     });
 
-    // Add selection properties
-    marker.selected = false;
+    // Set initial selection state
+    marker.selected = isSelected;
     marker.antennaName = d.antenna_name;
     marker.riverAbbr = d.riverAbbr;
 
@@ -156,7 +161,7 @@ export function addAntennas(activeAntennas, map1, antennasSelected) {
 
       const newColor = this.selected ? 
         d3.color(baseColor).brighter(1) : 
-        darkerColor;
+        d3.color(baseColor).darker(1.75);
       
       const newSize = this.selected ? 35 : 25;
       
@@ -242,4 +247,110 @@ export function addMapClickListener(map1) {
   
   // Disable double click zoom entirely
   map1.doubleClickZoom.disable();
+}
+
+export function clearAntennaSelections(antennaMarkers, antennasSelected) {
+  antennaMarkers.forEach(marker => {
+    if (marker.selected) {
+      marker.selected = false;
+      
+      // Reset marker style
+      const baseColor = getColorByRiverAbbr(marker.riverAbbr);
+      const darkerColor = d3.color(baseColor).darker(1.75);
+      
+      const newIcon = L.divIcon({
+        className: 'antenna-marker',
+        html: `<div style="
+          width: 4px; 
+          height: 25px; 
+          background-color: ${darkerColor};
+          transform: rotate(${marker.options.icon.options.html.match(/rotate\((.*?)deg\)/)[1]}deg);
+          transform-origin: center;
+          box-shadow: 0 0 4px #000;
+          border: 1px solid white;
+          opacity: 0.9;
+        "></div>`,
+        iconSize: [6, 25],
+        iconAnchor: [3, 12]
+      });
+      
+      marker.setIcon(newIcon);
+    }
+  });
+  
+  // Clear the selected antennas array
+  antennasSelected.value = [];
+}
+
+export function selectAllAntennas(antennaMarkers, antennasSelected) {
+  antennaMarkers.forEach(marker => {
+    if (!marker.selected) {
+      marker.selected = true;
+      
+      // Update marker style
+      const baseColor = getColorByRiverAbbr(marker.riverAbbr);
+      const brighterColor = d3.color(baseColor).brighter(1);
+      
+      const newIcon = L.divIcon({
+        className: 'antenna-marker',
+        html: `<div style="
+          width: 6px; 
+          height: 35px; 
+          background-color: ${brighterColor};
+          transform: rotate(${marker.options.icon.options.html.match(/rotate\((.*?)deg\)/)[1]}deg);
+          transform-origin: center;
+          box-shadow: 0 0 4px #000;
+          border: 1px solid white;
+          opacity: 0.9;
+        "></div>`,
+        iconSize: [8, 35],
+        iconAnchor: [4, 17]
+      });
+      
+      marker.setIcon(newIcon);
+    }
+  });
+  
+  // Set all antennas as selected
+  antennasSelected.value = antennaMarkers.map(marker => marker.antennaName);
+}
+
+export function addButtonControl(map1) {
+  const buttonControl = L.control({ position: 'topright' });
+
+  buttonControl.onAdd = function (map) {
+    const div = L.DomUtil.create('div', 'antenna-buttons-control');
+    div.style.backgroundColor = 'white';
+    div.style.padding = '5px';
+    div.style.borderRadius = '4px';
+    div.style.boxShadow = '0 1px 5px rgba(0,0,0,0.4)';
+    div.style.display = 'flex';
+    div.style.flexDirection = 'column';
+    div.style.gap = '5px';
+    
+    const selectAllButton = document.createElement('button');
+    selectAllButton.innerHTML = 'Select All Antennas';
+    selectAllButton.style.padding = '4px 8px';
+    
+    const clearButton = document.createElement('button');
+    clearButton.innerHTML = 'Clear Antenna Selections';
+    clearButton.style.padding = '4px 8px';
+    
+    div.appendChild(selectAllButton);
+    div.appendChild(clearButton);
+    
+    // Prevent map click events when clicking the buttons
+    L.DomEvent.disableClickPropagation(div);
+    
+    return div;
+  };
+
+  buttonControl.addTo(map1);
+  return buttonControl;
+}
+
+export function updateButtonHandlers(buttonControl, antennaMarkers, antennasSelected) {
+  const buttons = buttonControl.getContainer().querySelectorAll('button');
+  buttons[0].onclick = () => selectAllAntennas(antennaMarkers, antennasSelected);
+  buttons[1].onclick = () => clearAntennaSelections(antennaMarkers, antennasSelected);
 }

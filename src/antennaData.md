@@ -266,16 +266,11 @@ const selectAntennaDate = Inputs.range([0, dateRangeAntenna.length - 1], {
   step: 1,
   //format: index => d3.timeFormat("%Y-%m-%d")(dateRangeAntenna[index]),
   //label: "Antenna date:",
-  width: 400,
-  display: false
+  width: 400
+  //display: false
 });
 
-// Get selected date from the array
-//const selectedAntennaDate = dateRangeAntenna[Generators.input(selectAntennaDate)];
 const selectedAntennaDate = Generators.input(selectAntennaDate);
-
-// Convert index to actual date
-//const selectedAntennaDateDate = dateRangeAntenna[selectedAntennaDate];
 ```
 
 ```js
@@ -297,7 +292,7 @@ const selectedAntennaDateDate = dateRangeAntenna[selectedAntennaDate];
 /////////
 // Map //
 /////////
-import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, addMapClickListener, addAntennas } from "./components/antennaDataFunctions.js";
+import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, addMapClickListener, addAntennas, clearAntennaSelections, selectAllAntennas, addButtonControl, updateButtonHandlers } from "./components/antennaDataFunctions.js";
 ```
 
 <div style="margin-top: 20px">
@@ -310,7 +305,7 @@ import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, ad
   }
 </style>
 <div style="margin-top: 20px">
-  <h3>Select antenna location input file:</h3>
+  <h3>Select date:</h3>
   <div style="display: flex; align-items: center; gap: 15px">
     <span>${d3.timeFormat("%Y-%m-%d")(selectedAntennaDateDate)}</span>
     ${view(selectAntennaDate)}
@@ -340,11 +335,24 @@ import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, ad
   )
   .addTo(map1);
 
-  L.control.layers(baseMap).addTo(map1);
-  baseMap.USGS_hydro_detail.addTo(map1);
+L.control.layers(baseMap).addTo(map1);
+baseMap.USGS_hydro_detail.addTo(map1);
 
-  // Store the initial map view
-  const initialView1 = map1.getBounds();
+// Remove any existing controls
+map1.eachLayer(layer => {
+  if (layer instanceof L.Control) {
+    map1.removeControl(layer);
+  }
+});
+
+// Add the button control
+const buttonControl = addButtonControl(map1);
+
+```
+
+```js
+// Store the initial map view
+const initialView1 = map1.getBounds();
 
   // Update the map view when the window is resized
   window.addEventListener('resize', function() {
@@ -367,6 +375,8 @@ addMapClickListener(map1);
 ```
 
 ```js
+let antennasSelected = Mutable(activeAntennas.map(d => d.antenna_name));
+
 // Clear any existing antenna layers and add new ones
 map1.eachLayer(layer => {
   if (layer instanceof L.LayerGroup) {
@@ -374,10 +384,11 @@ map1.eachLayer(layer => {
   }
 });
 
-let antennasSelected = Mutable([]);
-
 const antennaResult = addAntennas(activeAntennas, map1, antennasSelected);
+updateButtonHandlers(buttonControl, antennaResult.markers, antennasSelected);
 ```
+
+
 
 ```js
 antennasSelected
