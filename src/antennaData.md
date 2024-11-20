@@ -217,10 +217,14 @@ coordsIn.forEach(d => {
 
 ```js
 const deploy = deployIn.map(d => ({
-  ...d,
   lat: d.lat === "NA" || d.lat === "" ? null : Number(d.lat),
   lon: d.lon === "NA" || d.lon === "" ? null : Number(d.lon),
-  antenna_name: d.antenna_name || "Unknown"
+  antenna_name: d.antenna_name || "Unknown",
+  deployed: d.deployed === "NA" || d.deployed === "" || !d.deployed ? null : new Date(d.deployed),
+  removed: d.removed === "NA" || d.removed === "" || !d.removed ? null : new Date(d.removed),
+  riverAbbr: d.riverAbbr || null,
+  angle: d.angle || null,
+  // Add any other fields you need, but NOT firstSlideNum
 })).filter(d => d.lat != null && d.lon != null);
 
 const antennaLocationsHistory = antennaLocationsHistoryIn.map(d => ({
@@ -240,6 +244,10 @@ const selectedAntennaDataIn = Generators.input(selectAntennaDataIn);//const ante
 
 ```js
 const antennaDataLocations = selectedAntennaDataIn === "deploy" ? deploy : antennaLocationsHistory;
+```
+
+```js
+antennaDataLocations
 ```
 
 ```js
@@ -366,11 +374,13 @@ map1.eachLayer(layer => {
   }
 });
 
-addAntennas(activeAntennas, map1);
+let antennasSelected = Mutable([]);
+
+const antennaResult = addAntennas(activeAntennas, map1, antennasSelected);
 ```
 
 ```js
-activeAntennas
+antennasSelected
 ```
 
 
@@ -414,5 +424,4 @@ sitesIn.forEach(d => {
 //sitesIn
 */
 ```
-
 

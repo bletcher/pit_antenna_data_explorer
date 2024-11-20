@@ -95,11 +95,11 @@ export function addMarkers(dIn, map1) {
   return markers;
 };
 
-export function addAntennas(activeAntennas, map1) {
+export function addAntennas(activeAntennas, map1, antennasSelected) {
   const antennaLayer = L.layerGroup();
+  let antennaMarkers = [];
 
   activeAntennas.forEach(d => {
-    // Get base color and darken it
     const baseColor = getColorByRiverAbbr(d.riverAbbr);
     const darkerColor = d3.color(baseColor).darker(1.75); 
 
@@ -121,8 +121,13 @@ export function addAntennas(activeAntennas, map1) {
 
     const marker = L.marker([d.lat, d.lon], {
       icon: antennaIcon,
-      zIndexOffset: 1000 // Make sure antennas appear above other markers
+      zIndexOffset: 1000
     });
+
+    // Add selection properties
+    marker.selected = false;
+    marker.antennaName = d.antenna_name;
+    marker.riverAbbr = d.riverAbbr;
 
     const popup = L.popup({
       closeButton: false,
@@ -138,11 +143,48 @@ export function addAntennas(activeAntennas, map1) {
     marker.on('mouseover', e => marker.openPopup());
     marker.on('mouseout', e => marker.closePopup());
     
+    // Modify the click handler
+    marker.on('click', function() {
+      this.selected = !this.selected;
+      
+      // Update antennasSelected Mutable
+      if (this.selected) {
+        antennasSelected.value = [...antennasSelected.value, this.antennaName];
+      } else {
+        antennasSelected.value = antennasSelected.value.filter(name => name !== this.antennaName);
+      }
+
+      const newColor = this.selected ? 
+        d3.color(baseColor).brighter(1) : 
+        darkerColor;
+      
+      const newSize = this.selected ? 35 : 25;
+      
+      const newIcon = L.divIcon({
+        className: 'antenna-marker',
+        html: `<div style="
+          width: ${this.selected ? '6px' : '4px'}; 
+          height: ${newSize}px; 
+          background-color: ${newColor};
+          transform: rotate(${d.angle || 0}deg);
+          transform-origin: center;
+          box-shadow: 0 0 4px #000;
+          border: 1px solid white;
+          opacity: 0.9;
+        "></div>`,
+        iconSize: [this.selected ? 8 : 6, newSize],
+        iconAnchor: [this.selected ? 4 : 3, newSize/2]
+      });
+      
+      this.setIcon(newIcon);
+    });
+
+    antennaMarkers.push(marker);
     marker.addTo(antennaLayer);
   });
 
   antennaLayer.addTo(map1);
-  return antennaLayer;
+  return { layer: antennaLayer, markers: antennaMarkers };
 }
 
 export function addClickListenersToMarkers(markers, markersSelected) {
