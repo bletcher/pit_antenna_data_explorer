@@ -26,6 +26,7 @@ const cdwbIn = FileAttachment("data/cdwb.json").json(); // this is a lot faster 
 //Copied from c:\Users\bletcher\OneDrive - DOI\projects\wbBook_quarto_targets\data\outForDownload\antenna
 // after adding lat and lon to the deploy file
 const deployIn = FileAttachment("data/deploy_with_lat_lon_added.csv").csv({typed: true});
+const antennaLocationsHistoryIn = FileAttachment("data/antennaLocationsHistory.csv").csv({typed: true});
 ```
 
 ```js
@@ -222,13 +223,30 @@ const deploy = deployIn.map(d => ({
   antenna_name: d.antenna_name || "Unknown"
 })).filter(d => d.lat != null && d.lon != null);
 
+const antennaLocationsHistory = antennaLocationsHistoryIn.map(d => ({
+  lat: d.lat === "NA" || d.lat === "" ? null : Number(d.lat),
+  lon: d.lon === "NA" || d.lon === "" ? null : Number(d.lon),
+  antenna_name: d.antenna_name || "Unknown",
+  deployed: d.observableFirstDate === "NA" || d.observableFirstDate === "" || !d.observableFirstDate ? null : new Date(d.observableFirstDate),
+  removed: d.observableLastDate === "NA" || d.observableLastDate === "" || !d.observableLastDate ? null : new Date(d.observableLastDate),
+  riverAbbr: d.riverAbbr || null,
+  angle: d.angle || null,
+  // Add any other fields you need, but NOT firstSlideNum
+})).filter(d => d.lat != null && d.lon != null);
+
+const selectAntennaDataIn = (Inputs.select(["deploy", "antennaLocationsHistory",], {value: "deploy", width: 40}));
+const selectedAntennaDataIn = Generators.input(selectAntennaDataIn);//const antennaLocations = [...deploy, ...antennaLocationsHistory];
+```
+
+```js
+const antennaDataLocations = selectedAntennaDataIn === "deploy" ? deploy : antennaLocationsHistory;
 ```
 
 ```js
 // Get date extent from deploy data
 const dateExtent = d3.extent([
-  ...deploy.map(d => new Date(d.deployed)),
-  ...deploy.map(d => new Date(d.removed))
+  ...antennaDataLocations.map(d => d.deployed),
+  ...antennaDataLocations.map(d => d.removed)
 ]);
 
 // Create array of all dates in range
@@ -254,7 +272,7 @@ const selectedAntennaDate = Generators.input(selectAntennaDate);
 
 ```js
 // Filter deploy data based on selected date
-const activeAntennas = deploy.filter(d => {
+const activeAntennas = antennaDataLocations.filter(d => {
   const deployedDate = new Date(d.deployed);
   const removedDate = new Date(d.removed);
   return selectedAntennaDateDate >= deployedDate && selectedAntennaDateDate <= removedDate;
@@ -275,8 +293,20 @@ import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, ad
 ```
 
 <div style="margin-top: 20px">
-  <h3>Select date for antenna filter:</h3>
-  ${d3.timeFormat("%Y-%m-%d")(selectedAntennaDateDate)} ${view(selectAntennaDate)}
+  <h3>Select antenna location input file:</h3>
+  ${selectAntennaDataIn}
+</div>
+<style>
+  .observablehq input[type="number"] {
+    display: none !important;
+  }
+</style>
+<div style="margin-top: 20px">
+  <h3>Select antenna location input file:</h3>
+  <div style="display: flex; align-items: center; gap: 15px">
+    <span>${d3.timeFormat("%Y-%m-%d")(selectedAntennaDateDate)}</span>
+    ${view(selectAntennaDate)}
+  </div>
 </div>
 
 ```js

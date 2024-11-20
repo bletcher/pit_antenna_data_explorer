@@ -99,32 +99,39 @@ export function addAntennas(activeAntennas, map1) {
   const antennaLayer = L.layerGroup();
 
   activeAntennas.forEach(d => {
-    // Create custom divIcon with rotated line
+    // Get base color and darken it
+    const baseColor = getColorByRiverAbbr(d.riverAbbr);
+    const darkerColor = d3.color(baseColor).darker(1.75); 
+
     const antennaIcon = L.divIcon({
       className: 'antenna-marker',
       html: `<div style="
-        width: 3px; 
-        height: 20px; 
-        background-color: darkred;
+        width: 4px; 
+        height: 25px; 
+        background-color: ${darkerColor};
         transform: rotate(${d.angle || 0}deg);
         transform-origin: center;
+        box-shadow: 0 0 4px #000;
+        border: 1px solid white;
+        opacity: 0.9;
       "></div>`,
-      iconSize: [4, 20],
-      iconAnchor: [2, 10]
+      iconSize: [6, 25],
+      iconAnchor: [3, 12]
     });
 
     const marker = L.marker([d.lat, d.lon], {
-      icon: antennaIcon
+      icon: antennaIcon,
+      zIndexOffset: 1000 // Make sure antennas appear above other markers
     });
 
     const popup = L.popup({
       closeButton: false,
       offset: [0, -5]
     }).setContent(`
+      Section: ${d.section}<br>
       Antenna: ${d.antenna_name}<br>
       Deployed: ${d3.timeFormat("%Y-%m-%d")(new Date(d.deployed))}<br>
       Removed: ${d3.timeFormat("%Y-%m-%d")(new Date(d.removed))}<br>
-      Angle: ${d.angle || 0}°
     `);
     
     marker.bindPopup(popup);
