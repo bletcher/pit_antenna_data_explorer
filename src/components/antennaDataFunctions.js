@@ -101,7 +101,7 @@ export function addAntennas(activeAntennas, map1, antennasSelected) {
 
   activeAntennas.forEach(d => {
     const baseColor = getColorByRiverAbbr(d.riverAbbr);
-    const isSelected = antennasSelected.value.includes(d.antenna_name);
+    const isSelected = antennasSelected.value.includes(d.riverMeter_river);
     const markerColor = isSelected ? 
       d3.color(baseColor).brighter(1) : 
       d3.color(baseColor).darker(1.75);
@@ -131,17 +131,19 @@ export function addAntennas(activeAntennas, map1, antennasSelected) {
 
     // Set initial selection state
     marker.selected = isSelected;
-    marker.antennaName = d.antenna_name;
+    //marker.antennaName = d.antenna_name;
     marker.riverAbbr = d.riverAbbr;
+    marker.riverMeter_river = d.riverMeter_river;
 
     const popup = L.popup({
       closeButton: false,
       offset: [0, -5]
     }).setContent(`
-      Section: ${d.section}<br>
-      Antenna: ${d.antenna_name}<br>
-      Deployed: ${d3.timeFormat("%Y-%m-%d")(new Date(d.deployed))}<br>
-      Removed: ${d3.timeFormat("%Y-%m-%d")(new Date(d.removed))}<br>
+      <b>Section:</b> ${d.section}<br>
+      <b>Antenna_name:</b> ${d.antenna_name}<br>
+      <b>riverMeter_river:</b> ${d.riverMeter_river}<br>
+      <b>Deployed:</b> ${d3.timeFormat("%Y-%m-%d")(new Date(d.deployed))}<br>
+      <b>Removed:</b> ${d3.timeFormat("%Y-%m-%d")(new Date(d.removed))}<br>
     `);
     
     marker.bindPopup(popup);
@@ -154,9 +156,9 @@ export function addAntennas(activeAntennas, map1, antennasSelected) {
       
       // Update antennasSelected Mutable
       if (this.selected) {
-        antennasSelected.value = [...antennasSelected.value, this.antennaName];
+        antennasSelected.value = [...antennasSelected.value, this.riverMeter_river];
       } else {
-        antennasSelected.value = antennasSelected.value.filter(name => name !== this.antennaName);
+        antennasSelected.value = antennasSelected.value.filter(name => name !== this.riverMeter_river);
       }
 
       const newColor = this.selected ? 
@@ -312,7 +314,7 @@ export function selectAllAntennas(antennaMarkers, antennasSelected) {
   });
   
   // Set all antennas as selected
-  antennasSelected.value = antennaMarkers.map(marker => marker.antennaName);
+  antennasSelected.value = antennaMarkers.map(marker => marker.riverMeter_river);
 }
 
 export function addButtonControl(map1) {

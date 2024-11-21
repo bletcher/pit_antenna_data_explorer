@@ -9,8 +9,8 @@ style: gridCustom.css
 ```
 
 ```js
-import {antennaData} from "./components/antennaDataGraphs.js";
-import {speciesMap, riversMap, variablesMapAnt, variablesMapAntNoNull} from "./components/maps.js";
+import {antennaDataGraph, antennaMapGraph} from "./components/antennaDataGraphs.js";
+import {speciesMap, riversMap, variablesMapAnt, variablesMapAntNoNull, riversMapFromDeploy} from "./components/maps.js";
 //import {interval} from 'https://observablehq.com/@mootari/range-slider';
 ```
 
@@ -52,6 +52,7 @@ cdwb.forEach(d => {
   d.j = Number(formatTimeJ(d.detectionDate));
   d.hour = Number(formatTimeHour(d.detectionDate));
   d.minute = Number(formatTimeMinute(d.detectionDate));
+  d.riverMeter_river = `${d.riverMeter}_${d.riverOrdered}`;
   //d.title = d.tag
 });
 
@@ -109,14 +110,14 @@ const cdwbAntennaSpeciesYearsRiver = cdwbAntennaSpeciesYears.filter(
 ```
 
 ```js
-const riverMeters = [...new Set(cdwbAntennaSpeciesYearsRiver.map(d => `${d.riverMeter}_${d.riverOrdered}`))].sort();
+const riverMeters = [...new Set(cdwbAntennaSpeciesYearsRiver.map(d => d.riverMeter_river))].sort();
 const selectRiverMeters = (Inputs.select(riverMeters, {value: riverMeters, multiple: 5, width: 30}));
 const selectedRiverMeters = Generators.input(selectRiverMeters);
 ```
 
 ```js
 const cdwbAntennaSpeciesYearsRiverRiverMeters = cdwbAntennaSpeciesYearsRiver.filter(
-  d => selectedRiverMeters.includes(`${d.riverMeter}_${d.riverOrdered}`)        
+  d => selectedRiverMeters.includes(d.riverMeter_river)        
 )
 ```
 
@@ -183,7 +184,7 @@ const selectedGrouping = Generators.input(selectGrouping);
     </div>
   </div>
   <div class="card antGraph">
-    ${antennaData(
+    ${antennaDataGraph(
       cdwbAntennaSpeciesYearsRiverRiverMeters,
       selectedInterval,
       selectedFillVar,
@@ -192,7 +193,7 @@ const selectedGrouping = Generators.input(selectGrouping);
   </div>
 </div>
 
-cdwbAntennaSpeciesYearsRiverRiverMeters
+
 ```js
 cdwbAntennaSpeciesYearsRiverRiverMeters
 ```
@@ -212,11 +213,8 @@ coordsIn.forEach(d => {
 ```
 
 ```js
-//coordsIn
-```
-
-```js
 const deploy = deployIn.map(d => ({
+  section: d.section || null,
   lat: d.lat === "NA" || d.lat === "" ? null : Number(d.lat),
   lon: d.lon === "NA" || d.lon === "" ? null : Number(d.lon),
   antenna_name: d.antenna_name || "Unknown",
@@ -224,7 +222,7 @@ const deploy = deployIn.map(d => ({
   removed: d.removed === "NA" || d.removed === "" || !d.removed ? null : new Date(d.removed),
   riverAbbr: d.riverAbbr || null,
   angle: d.angle || null,
-  // Add any other fields you need, but NOT firstSlideNum
+  riverMeter_river: `${d.riverMeter}_${riversMapFromDeploy.get(d.river)}` || null
 })).filter(d => d.lat != null && d.lon != null);
 
 const antennaLocationsHistory = antennaLocationsHistoryIn.map(d => ({
@@ -247,10 +245,6 @@ const antennaDataLocations = selectedAntennaDataIn === "deploy" ? deploy : anten
 ```
 
 ```js
-antennaDataLocations
-```
-
-```js
 // Get date extent from deploy data
 const dateExtent = d3.extent([
   ...antennaDataLocations.map(d => d.deployed),
@@ -264,10 +258,7 @@ const dateRangeAntenna = d3.timeDay.range(dateExtent[0], dateExtent[1]);
 const selectAntennaDate = Inputs.range([0, dateRangeAntenna.length - 1], {
   value: 0,
   step: 1,
-  //format: index => d3.timeFormat("%Y-%m-%d")(dateRangeAntenna[index]),
-  //label: "Antenna date:",
   width: 400
-  //display: false
 });
 
 const selectedAntennaDate = Generators.input(selectAntennaDate);
@@ -292,23 +283,40 @@ const selectedAntennaDateDate = dateRangeAntenna[selectedAntennaDate];
 /////////
 // Map //
 /////////
-import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, addMapClickListener, addAntennas, clearAntennaSelections, selectAllAntennas, addButtonControl, updateButtonHandlers } from "./components/antennaDataFunctions.js";
+import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, addMapClickListener, addAntennas, clearAntennaSelections, selectAllAntennas, addButtonControl, updateButtonHandlers, antMapGraph } from "./components/antennaDataFunctions.js";
 ```
 
-<div style="margin-top: 20px">
-  <h3>Select antenna location input file:</h3>
-  ${selectAntennaDataIn}
-</div>
-<style>
-  .observablehq input[type="number"] {
-    display: none !important;
-  }
-</style>
-<div style="margin-top: 20px">
-  <h3>Select date:</h3>
-  <div style="display: flex; align-items: center; gap: 15px">
-    <span>${d3.timeFormat("%Y-%m-%d")(selectedAntennaDateDate)}</span>
-    ${view(selectAntennaDate)}
+  <div style="margin-top: 20px">
+    <h3>Select antenna location input file:</h3>
+    ${selectAntennaDataIn}
+  </div>
+  <style>
+    .observablehq input[type="number"] {
+      display: none !important;
+    }
+  </style>
+  <div style="margin-top: 20px">
+    <h3>Select date to show antennas on the map:</h3>
+    <div style="display: flex; align-items: center; gap: 15px">
+      <span>${d3.timeFormat("%Y-%m-%d")(selectedAntennaDateDate)}</span>
+      ${view(selectAntennaDate)}
+    </div>
+  </div>
+  <div class="wrapper2">
+    <div class="card antMap">
+      ${div_map1}
+    </div>
+    <div class="card antMapGraph">
+      there could be a graph here, but updating it based on the date slider is a slow
+    <!--
+      ${antennaMapGraph(
+        cdwbAntennaMap,
+        selectedInterval,
+        selectedFillVar,
+        width
+      )}
+    -->
+    </div>
   </div>
 </div>
 
@@ -318,7 +326,7 @@ import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, ad
 /////////
 
   const lat1 = 42.4344;
-  const lon1 = -72.67;
+  const lon1 = -72.661;
   const mag1 = 16.4;
 
   const div_map1 = display(document.createElement("div"));
@@ -375,7 +383,7 @@ addMapClickListener(map1);
 ```
 
 ```js
-let antennasSelected = Mutable(activeAntennas.map(d => d.antenna_name));
+let antennasSelected = Mutable(activeAntennas.map(d => d.riverMeter_river));
 
 // Clear any existing antenna layers and add new ones
 map1.eachLayer(layer => {
@@ -388,51 +396,22 @@ const antennaResult = addAntennas(activeAntennas, map1, antennasSelected);
 updateButtonHandlers(buttonControl, antennaResult.markers, antennasSelected);
 ```
 
-
-
 ```js
-antennasSelected
-```
-
-
-
-
-
-
-
-
-```js
-/*
-function convertUTMToLatLon(easting, northing, zone) {
-    const utmProj = `+proj=utm +zone=${zone} +datum=WGS84 +units=m +no_defs`;
-    const latLonProj = '+proj=longlat +datum=WGS84 +no_defs';
-    return proj4(utmProj, latLonProj, [easting, northing]);
-}
-*/
-
-/*
- * Function to calculate UTM zone from longitude
- * @param {number} lon - Longitude
- * @returns {number} - UTM zone
- */
-function getUTMZone(lon) {
-    return Math.floor((lon + 180) / 6) + 1;
-}
+//const cdwbAntennaMap = cdwbAntennaSpeciesYearsRiverRiverMeters.filter(d => antennasSelected.includes(d.riverMeter_river));
 ```
 
 ```js
-//sitesIn
-/*
-const utmZone = getUTMZone(-72.5);
 
-sitesIn.forEach(d => {
-        const latLon = convertUTMToLatLon(d.x, d.y, utmZone);
-        d.latitude = latLon[1];
-        d.longitude = latLon[0];
-    });
-    
-
-//sitesIn
-*/
 ```
 
+```js
+//cdwbAntennaMap
+```
+
+```js
+//antennasSelected
+```
+
+```js
+//activeAntennas
+```

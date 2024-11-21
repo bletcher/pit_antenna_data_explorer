@@ -1,7 +1,7 @@
 export const variablesMapAntNoNull = new Map([
   ["Species", "species"],
   ["River", "riverOrdered"],
-  ["Antenna location", "riverMeter"],
+  ["Antenna location", "riverMeter_river"],
   ["Hour", "hour"]
 ]);
 
@@ -31,6 +31,13 @@ export const riversMap = new Map([
   ["Open large", "WB Jimmy"],
   ["Open small", "WB Mitchell"],
   ["Isolated small", "WB OBear"]
+]);
+
+export const riversMapFromDeploy = new Map([
+  ["west brook", "West Brook"],
+  ["wb jimmy", "WB Jimmy"],
+  ["wb mitchell", "WB Mitchell"],
+  ["wb obear", "WB OBear"]
 ]);
 
 export const surveysMap = new Map([
