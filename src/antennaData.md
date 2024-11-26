@@ -30,6 +30,10 @@ const antennaLocationsHistoryIn = FileAttachment("data/antennaLocationsHistory.c
 ```
 
 ```js
+const envDataIn = FileAttachment("data/envDataWB.json").json();
+```
+
+```js
 //Copied from C:\Users\bletcher\OneDrive - DOI\PITTAGMAIN\West Brook data\
 const coordsIn = FileAttachment("data/WBCoordsForD3JS_NHDHRsnapped.csv").csv({typed: true});
 
@@ -79,7 +83,7 @@ const selectedSpecies = Generators.input(selectSpecies);
 ```js
 const cdwbAntennaSpecies = cdwbAntenna.filter(
   d => selectedSpecies.includes(d.species)        
-)
+);
 ```
 
 ```js
@@ -90,6 +94,10 @@ const selectedYears = Generators.input(selectYears);
 
 ```js
 const cdwbAntennaSpeciesYears = cdwbAntennaSpecies.filter(
+  d => selectedYears.includes(d.year)        
+);
+
+const envDataSpeciesYears = envDataIn.filter(
   d => selectedYears.includes(d.year)        
 );
 ```
@@ -106,7 +114,11 @@ const selectedRivers = Generators.input(selectRivers);
 ```js
 const cdwbAntennaSpeciesYearsRiver = cdwbAntennaSpeciesYears.filter(
   d => selectedRivers.includes(d.riverOrdered)        
-)
+);
+
+const envDataSpeciesYearsRiver = envDataSpeciesYears.filter(
+  d => selectedRivers.includes(d.riverOrdered)        
+);
 ```
 
 ```js
@@ -118,13 +130,16 @@ const selectedRiverMeters = Generators.input(selectRiverMeters);
 ```js
 const cdwbAntennaSpeciesYearsRiverRiverMeters = cdwbAntennaSpeciesYearsRiver.filter(
   d => selectedRiverMeters.includes(d.riverMeter_river)        
-)
+);
 ```
 
 ```js
 //const interval = d3.range(1, 31, 1);
 const selectInterval = (Inputs.range([1, 31], {value: 1, step: 1, width: 10}));
 const selectedInterval = Generators.input(selectInterval);
+
+const selectWidth = (Inputs.range([1000, 10000], {value: 1150, step: 100, width: 10}));
+const selectedWidth = Generators.input(selectWidth);
 
 //const fxVar = ["species", "riverOrdered", "riverMeter"];
 const selectFxVar = (Inputs.select(variablesMapAnt, {value: "species", multiple: false, width: 10}));
@@ -140,15 +155,21 @@ const selectedFillVar = Generators.input(selectFillVar);
 
 const selectGrouping = (Inputs.select(["None", "Day", "Hour", "Minute"], {value: "None", width: 5}));
 const selectedGrouping = Generators.input(selectGrouping);
+
+const selectFacet = (Inputs.radio([true, false], {value: false, width: 5}));
+const selectedFacet = Generators.input(selectFacet);
+
+const selectFlowX = (Inputs.range([0, 200], {value: 1, step: 1, width: 10}));
+const selectedFlowX = Generators.input(selectFlowX);
 ```
 
 <div class="wrapper2">
   <div class="card antSelectors">
-    <h1 style="margin-bottom: 20px"><strong>Filter data</strong></h1>
-      <div style="display: flex; align-items: center; gap: 15px">
+    <h1 style="margin-bottom: 12px"><strong>Filter data</strong></h1>
+      <div style="display: flex; align-items: center; gap: 15px;">
         Group individuals by? <span>${view(selectGrouping)}</span>
       </div>
-      <hr>
+      <hr style="margin-top: 0px; margin-bottom: 0px">
       <div style="margin-top: 0px">
       <h2>Select species:</h2>
       <div style="display: flex; align-items: center; gap: 15px">
@@ -173,26 +194,41 @@ const selectedGrouping = Generators.input(selectGrouping);
         ${view(selectRiverMeters)} <span>n = ${cdwbAntennaSpeciesYearsRiverRiverMeters.length}</span>
       </div>
     </div>
-    <hr>
+    <hr style="margin-top: 5px; margin-bottom: 0px">
     <div style="margin-top: 2px">
-      <h2>Select plotting interval (days):</h2>
-      ${view(selectInterval)}
+      <h2>Select plotting width:</h2>
+      ${view(selectWidth)}
+    </div>
+    <h2>
+      <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px">
+        Select color var: <span>${view(selectFillVar)}</span>
+      </div>
+    </h2>
+    <div style="margin-top: 20px">
+    <h2>Facet graph by river (and add flow)?</h2>
+      ${view(selectFacet)}
     </div>
     <div style="margin-top: 20px">
-    <h2>Select color variable:</h2>
-      ${view(selectFillVar)}
+    <h2>Flow multiplier:</h2>
+      ${view(selectFlowX)}
     </div>
   </div>
   <div class="card antGraph">
     ${antennaDataGraph(
       cdwbAntennaSpeciesYearsRiverRiverMeters,
-      selectedInterval,
+      envDataSpeciesYearsRiver,
+      selectedWidth,
       selectedFillVar,
+      selectedFacet,
+      selectedFlowX,
       width
     )}
   </div>
 </div>
 
+```js
+selectedInterval
+```
 
 ```js
 cdwbAntennaSpeciesYearsRiverRiverMeters

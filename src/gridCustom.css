@@ -71,6 +71,17 @@
   grid-column: 2 / 12;
   grid-row: 1 / 6;
   margin-left: 12px;
+  overflow-x: auto;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.card.antGraph2 {
+  overflow-x: auto;
+  max-width: 100%;
+  height: 100%;        /* Fill available height */
+  display: flex;       /* Use flexbox for better scaling */
+  flex-direction: column;
 }
 
 .antMap {
