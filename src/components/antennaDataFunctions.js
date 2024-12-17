@@ -64,7 +64,7 @@ export function addMarkers(dIn, map1) {
   let markers = [];
 
   dIn.forEach(function(d) {
-    let marker = L.circleMarker([d.snap_lat, d.snap_lon], {
+    let marker = L.circleMarker([d.lat, d.lon], {
       color: getColorByRiverAbbr(d.riverAbbr),
       fillColor: getColorByRiverAbbr(d.riverAbbr),
       fillOpacity: 0.25,
@@ -81,6 +81,43 @@ export function addMarkers(dIn, map1) {
       closeButton: false,
       offset: [0, -5]
     }).setContent(`Section: ${d.section}`);
+    
+    marker.bindPopup(popup);
+    marker.on('mouseover', function(e) {
+      this.openPopup();
+    });
+    marker.on('mouseout', function(e) {
+      this.closePopup();
+    });
+
+    markers.push(marker);
+  });
+  return markers;
+};
+
+export function addMarkersTodd(dIn, map1) {
+  let markers = [];
+
+  dIn.forEach(function(d) {
+    let marker = L.circleMarker([d.lat, d.lon], {
+      radius: 5,
+      fillColor: '#00',
+      color: '#000',
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8
+    }).addTo(map1);
+
+    // Add a 'selected' property to the marker
+    marker.selected = false;
+    marker.siteID = d.antenna_name;
+    marker.riverAbbr = d.riverAbbr;
+
+    // Add mouseover popup with explicit options
+    const popup = L.popup({
+      closeButton: false,
+      offset: [0, -5]
+    }).setContent(`name: ${d.antenna_name}`);
     
     marker.bindPopup(popup);
     marker.on('mouseover', function(e) {

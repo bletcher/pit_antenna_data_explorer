@@ -36,8 +36,11 @@ const envDataIn = FileAttachment("data/envDataWB.json").json();
 ```js
 //Copied from C:\Users\bletcher\OneDrive - DOI\PITTAGMAIN\West Brook data\
 const coordsIn = FileAttachment("data/WBCoordsForD3JS_NHDHRsnapped.csv").csv({typed: true});
+```
 
-//const cdwbIn = FileAttachment("data/parquet/part-0.parquet").parquet();
+```js
+//CSV saved from xls with the same file name. These are updated opints from Todd in 2024
+const coordsInTodd = FileAttachment("data/West Brook_Lat Long Points_20241210.csv").csv({typed: true});
 ```
 
 ```js
@@ -227,10 +230,6 @@ const selectedFlowX = Generators.input(selectFlowX);
 </div>
 
 ```js
-selectedInterval
-```
-
-```js
 cdwbAntennaSpeciesYearsRiverRiverMeters
 ```
 
@@ -244,9 +243,12 @@ const dateRange = d3.extent(cdwbAntennaSpeciesYearsRiverRiverMeters, d => d.dete
 ```js
 coordsIn.forEach(d => {
   d.siteID = `${d.riverAbbr}_${d.section}`;
+  d.lat = d.snap_lat;
+  d.lon = d.snap_lon;
   //d.title = d.tag
 });
 ```
+
 
 ```js
 const deploy = deployIn.map(d => ({
@@ -319,7 +321,7 @@ const selectedAntennaDateDate = dateRangeAntenna[selectedAntennaDate];
 /////////
 // Map //
 /////////
-import { baseMap, addMarkers, addClickListenersToMarkers, updateMarkerStyles, addMapClickListener, addAntennas, clearAntennaSelections, selectAllAntennas, addButtonControl, updateButtonHandlers, antMapGraph } from "./components/antennaDataFunctions.js";
+import { baseMap, addMarkers, addMarkersTodd, addClickListenersToMarkers, updateMarkerStyles, addMapClickListener, addAntennas, clearAntennaSelections, selectAllAntennas, addButtonControl, updateButtonHandlers, antMapGraph } from "./components/antennaDataFunctions.js";
 ```
 
   <div style="margin-top: 20px">
@@ -391,6 +393,9 @@ map1.eachLayer(layer => {
 
 // Add the button control
 const buttonControl = addButtonControl(map1);
+```
+
+```js
 
 ```
 
@@ -411,7 +416,18 @@ const initialView1 = map1.getBounds();
 /////////////////////////////////
 const initialSite = "WB_1";
 
-let markers = addMarkers(coordsIn, map1);
+let markers = addMarkers(coordsIn.filter(d => d.lat != null && d.lon != null), map1);
+let toddMarkers = addMarkersTodd(coordsInTodd.filter(d => d.lat != null && d.lon != null), map1);
+
+// Merge toddMarkers into markers layer group
+if (toddMarkers instanceof L.LayerGroup) {
+    toddMarkers.eachLayer(layer => {
+        markers.addLayer(layer);
+    });
+} else if (toddMarkers instanceof L.Layer) {
+    markers.addLayer(toddMarkers);
+}
+
 let markersSelected = Mutable([initialSite]);
 addClickListenersToMarkers(markers, markersSelected);
 updateMarkerStyles(markers);
