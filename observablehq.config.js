@@ -13,6 +13,7 @@ export default {
          {name: "Overview", path: "/overview"},
          {name: "Variables over time", path: "/overTime"},
          {name: "By individual", path: "rawDataByInd"},
+         {name: "Individuals range plot", path: "individualsRangePlot"},
          {name: "Antenna data", path: "antennaData"},
          
          //{hr: true}
