@@ -44,9 +44,9 @@ export function plotRangeOverTime(
   const plot = Plot.plot({
     width: width,
     height: 1000,
-    //marginBottom: 100,
+    marginBottom: 40,
     y: {
-      //label: `Individuals Order (by ${orderVar})`,
+      label: null,
       //tickFormat: d => processedData[d]?.["Account #"] || ""
       //tickFormat: null
     },
@@ -62,7 +62,6 @@ export function plotRangeOverTime(
     },
     marks: [
       Plot.frame({stroke: "lightgrey"}),
-      Plot.axisY({ticks: []}),
       Plot.link(
         dIn,
         {
@@ -109,21 +108,35 @@ export function plotRangeOverTime(
           //title: d => `Date: ${d.dates}`
         }
       )] : []),
+      Plot.line(
+        cjsIn.filter(d => d.variable == "phiBetaIntercept"),
+        {
+          x: "medianDate",
+          y: d => d.estimate01CumulProd * dIn.length,
+          z: "speciesGroup",
+          stroke: "speciesGroup",
+          //fill:  "speciesGroup",//"blue",
+          shape: "speciesGroup",
+          fx: facetVar,
+          tip: true,
+        }
+      ),
       Plot.dot(
         cjsIn.filter(d => d.variable == "phiBetaIntercept"),
         {
           x: "medianDate",
           y: d => d.estimate01CumulProd * dIn.length,
-          stroke: "red",
-          fill:  "red",//"blue",
+          stroke: "speciesGroup",
+          fill:  "speciesGroup",//"blue",
+          shape: "speciesGroup",
           fx: facetVar,
           r: 5,
-          //tip: true,
+          tip: true,
           //title: d => `Date: ${d.dates}`
         }
       ),
       Plot.axisX({fontSize: "15px"}),
-      Plot.axisY({fontSize: "14px"})
+      Plot.axisY({fontSize: "14px", ticks: []})
     ]
   })
 
@@ -147,7 +160,7 @@ export function plotRangeOverTime(
                   if (titleElement.text() !== mousedDot) {
                       d3.select(this).attr("stroke-width", 1).attr("opacity", 0.2);
                   } else {
-                      d3.select(this).attr("stroke-width", 8).raise();
+                      d3.select(this).attr("stroke-width", 5).raise();
                   }
               } else {
                   d3.select(this).attr("stroke-width", 1);

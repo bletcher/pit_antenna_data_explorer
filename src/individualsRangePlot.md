@@ -54,10 +54,13 @@ cdwb
 ```js
 const cdwbByIndFiltered = getDatByIndividual(cdwbFiltered)
   .sort((a, b) => {
-    if (a["minDate"] !== b["minDate"]) {
-      return a["minDate"] - b["minDate"];
+    // Convert to Date objects if minDate is a string
+    const dateA = new Date(a["minDate"]);
+    const dateB = new Date(b["minDate"]);
+    if (dateA.getTime() !== dateB.getTime()) {
+      return dateA - dateB;
     } else {
-      return a["count"] - b["count"];
+      return b["count"] - a["count"];
     }
   }) 
   .map((d, i) => ({
@@ -71,7 +74,7 @@ cdwbByIndFiltered
 ```
 
 ```js
-const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort().filter(d => isFinite(d));
+const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort().filter(d => isFinite(d) && d >= 1995);
 const selectCohortsOV = (Inputs.select(cohorts, {value: [2003], multiple: 4, width: 20}));
 const selectedCohorts = Generators.input(selectCohortsOV);
 
@@ -215,6 +218,10 @@ const surveysMap = new Map([
         selectedRadioPlotDates,
         {width}
       )}
+    </div>
+    <div style="margin-top: 20px">
+      The horizontal lines are individual fish observations from the first to last capture date. Lines are ordered vertically by minimum date of capture and then by number of observations within each minimum date. <br><br>  
+      The dots are estimated proportion of individuals remaining for the cohort from a CJS model for the either salmon or trout cohorts (trout species and river locations combined).
     </div>
   </div>
 </div>

@@ -1,11 +1,11 @@
-########################################################
+#########################################################
 # Data loader for the CDWB CJS models
 # Use the sink() option to suppress all output so we only get the cat() output in the .json file
 # Do this for ALL r data loader scripts
-########################################################
+#########################################################
 
 options(warn = -1)
-sink(tempfile()) # Suppress all output so we only get the cat() output in the .json file
+sink(tempfile()) # Suppress all output so we only get the cat() output in the .json file at the end
 
 # force use of the correct library
 .libPaths("C:/Users/bletcher/AppData/Local/R/win-library/4.5")
@@ -38,7 +38,8 @@ d <- all |>
   mutate(
     tag = ifelse(is.na(tag), "untagged", tag),
     nPerInd = ifelse(tag == "untagged", 1, nPerInd),
-    dateEmigrated = ifelse(is.na(dateEmigrated), "null", dateEmigrated)
+    dateEmigrated = ifelse(is.na(dateEmigrated), "null", dateEmigrated),
+    speciesGroup = ifelse(species == "ats", "salmon", "trout")
   ) |>
   group_by(tag) |>
   arrange(detectionDate) |>
@@ -125,42 +126,71 @@ fitTT = function(dIn, maxAgeInSamples) {
 # Group by section, start date for the cohort,...maybe
 
 
-modelRuns <- list()
-index <- 1
+modelRunsTrout <- list()
+modelRunsSalmon <- list()
+indexTrout <- 1
+indexSalmon <- 1
 
-for (cohortIn in 1996:2015) {
+dTrout <- d |> filter(species != "ats")
+dSalmon <- d |> filter(species == "ats")
+
+for (cohortIn in 1997:2015) {
 #for (cohortIn in 2003:2004) {
   #print(cohortIn) Can;t have this for when the data loader actually runs because it outputs to standard output
-  message(paste("Fitting models for cohort", cohortIn))
-  d2 <- d |>
+  message(paste("Fitting models for _trout_ cohort", cohortIn))
+
+  d2Trout <- dTrout |>
     filter(cohort == cohortIn)
   
-  fitD2 <- fitTT(d2, 12) |>
+  fitD2Trout <- fitTT(d2Trout, 16) |>
     mutate(
-      cohort = cohortIn
+      cohort = cohortIn,
+      speciesGroup = "trout"
     )
 
-  modelRuns[[index]] <- fitD2
-  index <- index + 1
+  modelRunsTrout[[indexTrout]] <- fitD2Trout
+
+  indexTrout <- indexTrout + 1
 }
 
+for (cohortIn in 1997:2004) {
+#for (cohortIn in 2003:2004) {
+  #print(cohortIn) Can;t have this for when the data loader actually runs because it outputs to standard output
+  message(paste("Fitting models for _salmon_ cohort", cohortIn))
+
+  d2Salmon <- dSalmon |>
+    filter(cohort == cohortIn)
+  
+  fitD2Salmon <- fitTT(d2Salmon, 16) |>
+    mutate(
+      cohort = cohortIn,
+      speciesGroup = "salmon"
+    )
+
+  modelRunsSalmon[[indexSalmon]] <- fitD2Salmon
+
+  indexSalmon <- indexSalmon + 1
+}
+
+modelRuns <- bind_rows(modelRunsTrout, modelRunsSalmon)
+
 modelRunsDF <- modelRuns |>
-  bind_rows() |>
-  arrange(variable, cohort, time) |>  # Ensure correct order
-  group_by(variable, cohort) |>
+  #bind_rows() |>
+  arrange(speciesGroup, variable, cohort, time) |>  # Ensure correct order
+  group_by(speciesGroup, variable, cohort) |>
   mutate(estimate01CumulProd = cumprod(estimate01)) |>
   ungroup()
 
 #get median date for each ageInSmples/cohort
-medianDates <- all |>
-  group_by(cohort, ageInSamples) |>
+medianDates <- d |>
+  group_by(speciesGroup, cohort, ageInSamples) |>
   summarise(
     medianDate = format(median(detectionDate, na.rm = TRUE), "%Y-%m-%dT%H:%M:%SZ")
   ) |>
   ungroup()
 
 modelRunsDF <- modelRunsDF |>
-  left_join(medianDates, by = c("cohort", "time" = "ageInSamples"))
+  left_join(medianDates, by = c("speciesGroup", "cohort", "time" = "ageInSamples"))
 
 dOut <- toJSON(modelRunsDF,
   pretty = TRUE,

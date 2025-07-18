@@ -63,7 +63,7 @@
 import {define} from "./_observablehq/client.cd821602.js";
 import {registerFile} from "./_observablehq/stdlib.18690ca0.js";
 
-registerFile("./data/cdwb.json", {"name":"./data/cdwb.json","mimeType":"application/json","path":"./_file/data/cdwb.e2935803.json","lastModified":1744682420838,"size":202370399});
+registerFile("./data/cdwb.json", {"name":"./data/cdwb.json","mimeType":"application/json","path":"./_file/data/cdwb.0c4c4a11.json","lastModified":1752693636267,"size":216093922});
 
 define({id: "228db81c", inputs: ["FileAttachment"], outputs: ["cdwbIn"], body: (FileAttachment) => {
 //const cdwb = FileAttachment("data/all_for_obs.csv").csv({typed: true});
@@ -177,13 +177,14 @@ return {speciesMap,riversMap,surveysMap};
   </ol>
   <div id="observablehq-search"><input type="search" placeholder="Search"></div>
   <div id="observablehq-search-results"></div>
-  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.9790c9f7.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.6fb23d8f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
   <section class="observablehq-section-active">
     <summary>Chapters</summary>
     <ol>
     <li class="observablehq-link observablehq-link-active"><a href="./overview.html">Overview</a></li>
     <li class="observablehq-link"><a href="./overTime.html">Variables over time</a></li>
     <li class="observablehq-link"><a href="./rawDataByInd.html">By individual</a></li>
+    <li class="observablehq-link"><a href="./individualsRangePlot.html">Individuals range plot</a></li>
     <li class="observablehq-link"><a href="./antennaData.html">Antenna data</a></li>
     </ol>
   </section>
@@ -237,6 +238,6 @@ return {speciesMap,riversMap,surveysMap};
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="prev" href="./"><span>PIT Tag Data Explorer</span></a><a rel="next" href="./overTime.html"><span>Variables over time</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2025-04-16T12:01:49">Apr 16, 2025</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2025-07-18T19:50:54">Jul 18, 2025</a>.</div>
 </footer>
 </div>
