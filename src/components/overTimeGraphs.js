@@ -114,7 +114,7 @@ import { timeFormat } from 'd3-time-format';
         // Optionally, you can provide feedback to the user
         console.log("Text copied to clipboard:", textToCopy);
     })
-      ;
+      ; // end of d3.select(plot)         
 
     return plot;
   }

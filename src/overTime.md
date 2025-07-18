@@ -34,7 +34,7 @@ const selectVariable = (Inputs.select(variablesMap, {value: "observedLength", mu
 const selectedVariable = Generators.input(selectVariable);
 
 const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort().filter(d => isFinite(d));
-const selectCohortsOV = (Inputs.select(cohorts, {value: 2005, multiple: 4, width: 20}));
+const selectCohortsOV = (Inputs.select(cohorts, {value: [2005], multiple: 4, width: 20}));
 const selectedCohorts = Generators.input(selectCohortsOV);
 
 const species = [...new Set(cdwb.map(d => d.species))].sort();

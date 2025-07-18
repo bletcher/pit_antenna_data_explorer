@@ -16,10 +16,10 @@ import { timeFormat } from 'd3-time-format';
 
 export function plotRangeOverTime(
   dIn, 
-  // orderVar = "minDate", 
-  // strokeVar = "riverOrdered", 
-  // //fillVarsValues, 
+  cjsIn,
   facetVar = "cohort", 
+  colorVar = "species",
+  colorVarValues,
   minXValue,
   maxXValue, 
   plotMax = false, 
@@ -30,15 +30,15 @@ export function plotRangeOverTime(
   dIn = dIn.filter(d => d.xPosition >= minXValue && d.xPosition <= maxXValue);
 
   // Define fixed color scale
-  // const colorScale = Plot.scale({
-  //   color: {
-  //     type: "categorical",
-  //     domain: fillVarsValues, // Use actual values from fillVar
-  //     //range: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", 
-  //     //        "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"], // Fixed colors
-  //     unknown: "var(--theme-foreground-muted)"
-  //   }
-  // });
+  const colorScale = Plot.scale({
+    color: {
+      type: "categorical",
+      domain: colorVarValues, // Use actual values from fillVar
+      //range: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", 
+      //        "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"], // Fixed colors
+      unknown: "var(--theme-foreground-muted)"
+    }
+  });
 
 
   const plot = Plot.plot({
@@ -72,11 +72,12 @@ export function plotRangeOverTime(
           //markerStart: "dot",
           markerEnd: "dot",
           strokeWidth: 0.33,
-          //stroke: d => d[internalStrokeVar] ? d[internalStrokeVar] : "grey",
+          stroke: d => d[colorVar] ? d[colorVar] : "grey",
           //fy: "year",
           fx: facetVar,
-          tip: true,
-          title: d => `Tag: ${d["title"]}\nMin: ${d.minDate}\nMax: ${d.maxDate}\nCount: ${d.count}`
+          tip: false,
+          title: "title",
+          //title: d => `Tag: ${d["title"]}\nMin: ${d.minDate}\nMax: ${d.maxDate}\nCount: ${d.count}`
         }
       ),
       ...(plotMax ? [Plot.dot(
@@ -84,10 +85,11 @@ export function plotRangeOverTime(
         {
           x: "maxDate",
           y: "xPosition",
-          stroke: "grey",// d => d[internalStrokeVar] ? d[internalStrokeVar] : "grey",
-          fill: "white",
-         fx: facetVar,
-          r: 2
+          stroke: d => d[colorVar] ? d[colorVar] : "grey",
+          fill:  d => d[colorVar] ? d[colorVar] : "grey",//"white",
+          fx: facetVar,
+          r: 2,
+          //title: "title",
         }
       )] : []),
       ...(plotDates ? [Plot.dot(
@@ -98,16 +100,83 @@ export function plotRangeOverTime(
         {
           x: "date",
           y: "xPosition",
-          stroke: "darkgrey",// d => d[internalStrokeVar] ? d[internalStrokeVar] : "grey",
-          fill: "white",
+          stroke: d => d[colorVar] ? d[colorVar] : "grey",
+          fill:  d => d[colorVar] ? d[colorVar] : "grey",//"blue",
           fx: facetVar,
           r: 2,
+          title: "title",
           //tip: true,
           //title: d => `Date: ${d.dates}`
         }
-      )] : [])
+      )] : []),
+      Plot.dot(
+        cjsIn.filter(d => d.variable == "phiBetaIntercept"),
+        {
+          x: "medianDate",
+          y: d => d.estimate01CumulProd * dIn.length,
+          stroke: "red",
+          fill:  "red",//"blue",
+          fx: facetVar,
+          r: 5,
+          //tip: true,
+          //title: d => `Date: ${d.dates}`
+        }
+      ),
+      Plot.axisX({fontSize: "15px"}),
+      Plot.axisY({fontSize: "14px"})
     ]
   })
+
+
+    //https://observablehq.com/@mcmcclur/a-plot-selection-hack
+    let mousedDot = null;
+
+    d3
+      .select(plot)
+      .selectAll('path, circle')
+      .on("mouseover", function () {
+          mousedDot = d3.select(this).select("title").text();
+          console.log(mousedDot);
+
+          d3.select(plot)
+            .selectAll('path, circle')
+            .each(function() {
+              let titleElement = d3.select(this).select("title"); // this is the tag #
+
+              if (!titleElement.empty()) {
+                  if (titleElement.text() !== mousedDot) {
+                      d3.select(this).attr("stroke-width", 1).attr("opacity", 0.2);
+                  } else {
+                      d3.select(this).attr("stroke-width", 8).raise();
+                  }
+              } else {
+                  d3.select(this).attr("stroke-width", 1);
+              }
+          });
+      })
+      .on("mouseout", function () {
+          d3.select(plot).selectAll('path, circle').attr("stroke-width", 1).attr("opacity", 1);
+      })
+      .on("dblclick", function() {
+        // Get the text from the title element
+        const textToCopy = d3.select(this).select("title").text();
+    
+        // Create a temporary textarea element to hold the text
+        const tempTextArea = document.createElement("textarea");
+        tempTextArea.value = textToCopy;
+        document.body.appendChild(tempTextArea);
+    
+        // Select the text in the textarea and copy it to the clipboard
+        tempTextArea.select();
+        document.execCommand("copy");
+    
+        // Remove the temporary textarea element
+        document.body.removeChild(tempTextArea);
+    
+        // Optionally, you can provide feedback to the user
+        console.log("Text copied to clipboard:", textToCopy);
+      })
+      ; // end of d3.select(plot)   
 
   return plot;
 }

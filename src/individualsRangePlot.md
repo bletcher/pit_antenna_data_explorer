@@ -18,6 +18,22 @@ const cdwbIn = FileAttachment("data/cdwb.json").json(); // this is a lot faster 
 //const cdwbIn = FileAttachment("data/parquet/part-0.parquet").parquet();
 ```
 
+```js
+const cdwbCJSModelsIn = FileAttachment("data/cdwbCJSModels.json").json(); 
+```
+
+```js
+const cdwbCJSModels = [...cdwbCJSModelsIn];
+
+cdwbCJSModels.forEach(d => {
+  const medianDate = new Date(d.medianDate); 
+});
+```
+
+
+```js
+cdwbCJSModels
+```
 
 ```js
 const cdwb = [...cdwbIn];
@@ -27,7 +43,7 @@ cdwb.forEach(d => {
   const dateEmigrated = new Date(d.dateEmigrated); 
   d.detectionDate = detectionDate;
   d.dateEmigrated = dateEmigrated;
-  d.title = d.tag
+  d.title = d.tag // This is for interactivity in the graph
 });
 ```
 
@@ -55,12 +71,8 @@ cdwbByIndFiltered
 ```
 
 ```js
-const variables = ["observedLength", "observedWeight", "sectionN", "riverMeter"];
-const selectVariable = (Inputs.select(variablesMap, {value: "observedLength", multiple: false, width: 80}));
-const selectedVariable = Generators.input(selectVariable);
-
 const cohorts = [...new Set(cdwb.map(d => d.cohort))].sort().filter(d => isFinite(d));
-const selectCohortsOV = (Inputs.select(cohorts, {value: 2005, multiple: 4, width: 20}));
+const selectCohortsOV = (Inputs.select(cohorts, {value: [2003], multiple: 4, width: 20}));
 const selectedCohorts = Generators.input(selectCohortsOV);
 
 const species = [...new Set(cdwb.map(d => d.species))].sort();
@@ -82,10 +94,15 @@ const selectToolTip = (Inputs.radio([true, false], {value: false, label: "Show t
 const selectedToolTip = Generators.input(selectToolTip);
 ```
 
+
 ```js
 const plotFacetVars = ["cohort", "species", "survey", ""]
 const selectPlotFacetVars = (Inputs.select(plotFacetVars, {value: "cohort", multiple: false, width: 80}));
 const selectedPlotFacetVars = Generators.input(selectPlotFacetVars);
+
+const colorVariables = ["cohort", "species", "survey", ""];
+const selectColorVariable = (Inputs.select(colorVariables, {value: "species", multiple: false, width: 80}));
+const selectedColorVariable = Generators.input(selectColorVariable);
 
 const minYValue = (Inputs.range([0, cdwbByIndFiltered.length], {step: 10, value: 0, label: 'Minimum y value', width: 160}));
 const selectedMinYValue = Generators.input(minYValue);
@@ -154,7 +171,13 @@ const surveysMap = new Map([
     <div style="margin-top: 0px">
       <h2>Panel variable:</h2>
       <div style="display: flex; align-items: center; gap: 15px">
-        ${view(selectPlotFacetVars)}
+        ${view(selectPlotFacetVars)}  
+      </div>
+    </div>
+    <div style="margin-top: 20px">
+      <h2>Color variable:</h2>
+      <div style="display: flex; align-items: center; gap: 15px"> 
+        ${view(selectColorVariable)}
       </div>
     </div>
     <hr style="margin-top: 5px; margin-bottom: 0px">
@@ -182,15 +205,16 @@ const surveysMap = new Map([
     <div>
       ${plotRangeOverTime(
         cdwbByIndFiltered,
+        cdwbCJSModelsFiltered,
         selectedPlotFacetVars,
+        selectedColorVariable,
+        colorVariables,
         selectedMinYValue,
         selectedMaxYValue,
         selectedRadioPlotMax,
         selectedRadioPlotDates,
         {width}
       )}
-      <hr>
-      Double-click on a point to copy to PIT tag # to the clipboard.
     </div>
   </div>
 </div>
@@ -203,20 +227,6 @@ const cdwbFiltered0 = cdwb.filter(
 ```
 
 ```js
-/*
-const cdwbFiltered = cdwbFiltered0.filter(d => {
-  return (
-    d.riverMeter > 4000 &&
-    selectedSpecies.includes(d.species) &&
-    selectedCohorts.includes(d.cohort) &&
-    selectedRivers.includes(d.riverOrdered) &&
-    d.observedLength >= selectedRangeMinLength &&
-    d.observedLength <= selectedRangeMaxLength &&
-    d.nPerInd >= selectedRangeMinN &&
-    d.nPerInd <= selectedRangeMaxN
-  );
-});
-*/
 const cdwbFiltered = cdwbFiltered0.filter(
   d => {
     if(d.survey === "shock") {
@@ -242,8 +252,21 @@ const cdwbFiltered = cdwbFiltered0.filter(
         selectedSurveys.includes(d.survey);
     }
   }
-)
+);
 ```
+
+```js
+const cdwbCJSModelsFiltered = cdwbCJSModels.filter(
+  d => {
+      return selectedCohorts.includes(d.cohort)
+  }
+);
+```
+
+```js
+cdwbByIndFiltered.filter(d => d.title === "4109701335")
+```
+
 
 ---
 

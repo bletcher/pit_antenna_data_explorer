@@ -15,7 +15,8 @@ d <- all |>
     #aliveOrDead,
     nPerInd,
     #readerId,
-    relCF, dateEmigrated
+    relCF, dateEmigrated,
+    sampleNumber
   ) |>
   filter(species %in% c("bkt", "bnt", "ats")) |>
   # mutate(dateDiff = lagDetectionDate - detectionDate) |>
@@ -37,5 +38,5 @@ dOut <- toJSON(d,
   force = TRUE
 )
 
-dOut0 <- toJSON(d) # this is the same size as the one above
+#dOut0 <- toJSON(d) # this is the same size as the one above
 cat(dOut)

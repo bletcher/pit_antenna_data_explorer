@@ -16,6 +16,7 @@ export function getDatByIndividual(dIn) {
              datesLengths: (d) => d.map(x => ({date: x.detectionDate, observedLength: x.observedLength})),
              datesWeights: (d) => d.map(x => ({date: x.detectionDate, observedWeight: x.observedWeight})),
              years: (d) => d.map(x => x.detectionDate.getFullYear()),
+             sampleNumbers: (d) => d.map(x => x.sampleNumber),
              cohort: first('cohort'),
              species: first('species'),
              survey: first('survey'),
