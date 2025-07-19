@@ -178,8 +178,12 @@ modelRunsDF <- modelRuns |>
   #bind_rows() |>
   arrange(speciesGroup, variable, cohort, time) |>  # Ensure correct order
   group_by(speciesGroup, variable, cohort) |>
-  mutate(estimate01CumulProd = cumprod(estimate01)) |>
-  ungroup()
+  mutate(
+    estimate01CumulProd0 = cumprod(estimate01),
+    estimate01CumulProd = ifelse(variable == "phiBetaIntercept", estimate01CumulProd0, estimate01)
+  ) |>
+  ungroup() |>
+  dplyr::select(-estimate01CumulProd0)
 
 #get median date for each ageInSmples/cohort
 medianDates <- d |>

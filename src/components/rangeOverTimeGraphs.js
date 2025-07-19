@@ -24,6 +24,7 @@ export function plotRangeOverTime(
   maxXValue, 
   plotMax = false, 
   plotDates = false, 
+  selectedCJSValue,
  {width}
 ) {
 
@@ -109,7 +110,7 @@ export function plotRangeOverTime(
         }
       )] : []),
       Plot.line(
-        cjsIn.filter(d => d.variable == "phiBetaIntercept"),
+        cjsIn.filter(d => selectedCJSValue.includes(d.variable)),
         {
           x: "medianDate",
           y: d => d.estimate01CumulProd * dIn.length,
@@ -122,7 +123,7 @@ export function plotRangeOverTime(
         }
       ),
       Plot.dot(
-        cjsIn.filter(d => d.variable == "phiBetaIntercept"),
+        cjsIn.filter(d => selectedCJSValue.includes(d.variable)),
         {
           x: "medianDate",
           y: d => d.estimate01CumulProd * dIn.length,

@@ -110,9 +110,13 @@ const selectedColorVariable = Generators.input(selectColorVariable);
 const minYValue = (Inputs.range([0, cdwbByIndFiltered.length], {step: 10, value: 0, label: 'Minimum y value', width: 160}));
 const selectedMinYValue = Generators.input(minYValue);
 
-
 const maxYValue = (Inputs.range([0, cdwbByIndFiltered.length], {step: 10, value: cdwbByIndFiltered.length, label: 'Maximum y value', width: 160}));
 const selectedMaxYValue = Generators.input(maxYValue);
+
+//const cjsValue = (Inputs.checkbox(["Survival", "Capture", "none"], {label: "Show CJS data"}));
+const cjsValues = [...new Set(cdwbCJSModels.map(d => d.variable))];
+const cjsValue = (Inputs.select(cjsMap, {value: ["phiBetaIntercept"], label: "Show CJS data", multiple: true}));
+const selectedCJSValue = Generators.input(cjsValue);
 
 const radioPlotMax = (Inputs.radio([true, false], {value: false, label: "Highlight last date?"}));
 const selectedRadioPlotMax = Generators.input(radioPlotMax);
@@ -147,6 +151,11 @@ const surveysMap = new Map([
   ["Electrofishing", "shock"],
   ["Pit tag antenna", "stationaryAntenna"],
   ["Pit tag wand", "portableAntenna"]
+]);
+
+const cjsMap = new Map([
+  ["Survival", "phiBetaIntercept"],
+  ["Capture", "pBetaIntercept"]
 ]);
 ```
 
@@ -193,7 +202,10 @@ const surveysMap = new Map([
       ${view(radioPlotMax)}
     </div>
     <div style="margin-top: 2px">
-      ${view(radioPlotDates)}
+      ${view(radioPlotDates)} 
+    </div>
+    <div style="margin-top: 15px">
+       ${view(cjsValue)}
     </div>
     <hr>
     ${rangeMinLength}
@@ -216,12 +228,13 @@ const surveysMap = new Map([
         selectedMaxYValue,
         selectedRadioPlotMax,
         selectedRadioPlotDates,
+        selectedCJSValue,
         {width}
       )}
     </div>
     <div style="margin-top: 20px">
       The horizontal lines are individual fish observations from the first to last capture date. Lines are ordered vertically by minimum date of capture and then by number of observations within each minimum date. <br><br>  
-      The dots are estimated proportion of individuals remaining for the cohort from a CJS model for the either salmon or trout cohorts (trout species and river locations combined).
+      The dots are either estimated proportion of individuals remaining for the cohort from a CJS model or probability of capture for the either salmon or trout cohorts (trout species and river locations combined).
     </div>
   </div>
 </div>
